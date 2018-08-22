@@ -1,11 +1,11 @@
 var BigNumber = require('bignumber.js');
 
 /* Contracts  */
-const Token = artifacts.require("../../sharedcontracts/ERC20.sol");
+const Token = artifacts.require("./token/ERC20.sol");
 const Trust = artifacts.require("./Trust.sol");
 const TrustFactory = artifacts.require("./TrustFactory.sol");
-const EqualDistribution = artifacts.require("./EqualDistribution.sol");
-const MyBitBurner = artifacts.require("../../sharedcontracts/MyBitBurner.sol");
+const EqualDistribution = artifacts.require("./distrubtion/EqualDistribution.sol");
+const MyBitBurner = artifacts.require("./MyBitBurner.sol");
 
 const WEI = 1000000000000000000;
 
@@ -18,9 +18,9 @@ contract('Trust - Deploying and storing all contracts + validation', async (acco
   const beneficiaries = [beneficiary, beneficiary2, beneficiary3];
   const thief = web3.eth.accounts[9];
 
-  const tokenSupply = 1000;
-  const tokenPerAccount = 50;
-  const burnFee = 10;
+  const tokenSupply = 100000;
+  const tokenPerAccount = 1000;
+  const burnFee = 250;
 
   let originalBeneficiary; //Original beneficiary
 
@@ -66,7 +66,7 @@ contract('Trust - Deploying and storing all contracts + validation', async (acco
   });
 
   it ('Deploy TrustFactory contract', async() => {
-    trustFactory = await TrustFactory.new(burnerAddress, burnFee);
+    trustFactory = await TrustFactory.new(burnerAddress);
     tfAddress = await trustFactory.address;
     console.log(tfAddress);
     await myBitBurner.authorizeBurner(tfAddress);
