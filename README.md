@@ -6,6 +6,7 @@ The Trust Dapp allows users to leave a Trust in the form of Ether for a chosen b
 ### Ropsten Contracts 
 
 [MyBitBurner](https://ropsten.etherscan.io/address/0x733b124fbf283c32c1e3c59f434d9700d60bf1a4#code)
+
 [TrustFactory](https://ropsten.etherscan.io/address/0x38d07b2f1f6fcc37b80b9ce4c13adf678ca0097e)
 
 #### ⚠️ Warning 
