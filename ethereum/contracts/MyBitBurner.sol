@@ -40,7 +40,7 @@ contract MyBitBurner {
   external
   onlyOwner
   returns (bool) {
-    require(!authorizedBurner[msg.sender]);
+    require(!authorizedBurner[_burningContract]);
     authorizedBurner[_burningContract] = true;
     emit LogBurnerAuthorized(msg.sender, _burningContract);
     return true;
@@ -52,7 +52,7 @@ contract MyBitBurner {
   external
   onlyOwner
   returns (bool) {
-    require(authorizedBurner[msg.sender]);
+    require(authorizedBurner[_burningContract]);
     delete authorizedBurner[_burningContract];
     emit LogBurnerRemoved(msg.sender, _burningContract); 
     return true;

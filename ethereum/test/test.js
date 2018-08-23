@@ -64,11 +64,13 @@ contract('Trust - Deploying and storing all contracts + validation', async (acco
   it ('Deploy MyBitBurner contract', async() => {
     myBitBurner = await MyBitBurner.new(tokenAddress);
     burnerAddress = await myBitBurner.address;
+    assert.equal(await myBitBurner.owner(), web3.eth.accounts[0]);
     console.log(burnerAddress);
   });
 
   it ('Deploy TrustFactory contract', async() => {
     trustFactory = await TrustFactory.new(burnerAddress);
+    assert.equal(await trustFactory.mybFee(), burnFee); 
     tfAddress = await trustFactory.address;
     console.log(tfAddress);
     await myBitBurner.authorizeBurner(tfAddress);

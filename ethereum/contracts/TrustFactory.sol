@@ -1,7 +1,6 @@
 pragma solidity ^0.4.24;
 
 import './Trust.sol';
-import './SafeMath.sol';
 import './MyBitBurner.sol';
 
 
@@ -42,16 +41,16 @@ contract TrustFactory {
   // @notice If called by owner, this function prevents more Trust contracts from being made once
   // @notice Old contracts will continue to function
   function closeFactory()
+  onlyOwner
   external {
-    require(msg.sender == owner);
     require (!expired);
     expired = true;
   }
 
   // @notice can change how much MYB is burned for creating Trusts
   function changeMYBFee(uint _newFee)
+  onlyOwner
   external {
-    require(msg.sender == owner);
     uint oldFee = mybFee; 
     mybFee = _newFee;
     emit LogMYBFeeChange(oldFee, mybFee);
