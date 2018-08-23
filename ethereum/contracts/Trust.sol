@@ -57,10 +57,8 @@ contract Trust {
 	onlySender(trustor)
 	isRevocable
 	returns (bool) {
-		uint amount = trustBalance;
-		trustBalance = 0;
-		trustor.transfer(amount);
-		emit LogTrustRevoked(trustor, amount);
+		emit LogTrustRevoked(msg.sender, trustBalance);
+		delete trustBalance;
 		selfdestruct(msg.sender);
 		return true;
 	}
@@ -105,6 +103,12 @@ contract Trust {
 		emit LogNewBeneficiary(beneficiary, _beneficiary);
 		beneficiary = _beneficiary;
 		return true;
+	}
+
+	// @notice fallback function. Rejects all ether 
+	function ()
+	external { 
+		revert(); 
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
