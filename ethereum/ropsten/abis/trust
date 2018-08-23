@@ -156,7 +156,7 @@
         "type": "address"
       },
       {
-        "name": "_revokeable",
+        "name": "_revocable",
         "type": "bool"
       },
       {
@@ -180,6 +180,25 @@
     ],
     "payable": false,
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "fallback"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "alreadyDeposited",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -227,7 +246,7 @@
   {
     "constant": true,
     "inputs": [],
-    "name": "revokeable",
+    "name": "revocable",
     "outputs": [
       {
         "name": "",
