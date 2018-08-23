@@ -9,5 +9,7 @@ The Trust Dapp allows users to leave a Trust in the form of Ether for a chosen b
 
 [TrustFactory](https://ropsten.etherscan.io/address/0x38d07b2f1f6fcc37b80b9ce4c13adf678ca0097e)
 
+[MyBit-Ropsten token](https://ropsten.etherscan.io/address/0xbb07c8c6e7CD15E2E6F944a5C2CAC056c5476151)
+
 #### ⚠️ Warning 
 This application is unstable and has not undergone any rigorous security audits. Use at your own risk. 
