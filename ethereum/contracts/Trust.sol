@@ -27,9 +27,7 @@ contract Trust {
 	// @param (address) _trustor = The address that is depositing ETH for the _beneficiary
 	// @param (address) _beneficiary = The ETH address of who is to receive the trustBalance
 	// @param (bool) _revocable = Can the trustor revoke the contract at any point before the expiration?
-	// @param (uint) _expiration = Number of blocks until the trust is redeemable? (in seconds)
-
-	// @dev I removed _myBitBurner as the address seems to be unused -Peter
+	// @param (uint) _expiration = Number of blocks until the trust is redeemable (in Ethereum blocks)
 	constructor(address _trustor, address _beneficiary, bool _revocable, uint _expiration)
 	public {
 		trustor = _trustor;
@@ -38,7 +36,8 @@ contract Trust {
 		expiration = block.number.add(_expiration);
 	}
 
-	// @notice trustor can deposit WEI here
+	// @notice (payable) trustor can deposit WEI here once 
+	// @dev this function is called by the TrustFactory
 	function depositTrust()
 	external
 	lessThan(0, msg.value)
