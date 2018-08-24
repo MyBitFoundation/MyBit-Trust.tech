@@ -222,7 +222,6 @@ contract('Trust - Deploying and storing all contracts + validation', async (acco
     await trust.withdraw({from: currentBeneficiary});
 
     // Check variables
-    assert.equal(0, await trust.trustBalance());
     let balanceAfter = await web3.eth.getBalance(currentBeneficiary);   // TODO: should get actual gas used in the transaction
     console.log('Balance After: ' + balanceAfter);
     assert.equal(bn(balanceBefore).lt(balanceAfter), true);
