@@ -14,7 +14,7 @@ contract TrustFactory {
 
   MyBitBurner public mybBurner;         // The MyBitBurner contract instance
 
-  uint public mybFee = uint(250 * 10**18);     // How much MYB to burn in order to create a Trust
+  uint public mybFee = uint256(250 * 10**18);     // How much MYB to burn in order to create a Trust
 
   // @notice constructor: sets msg.sender as the owner, who has authority to close the factory
   constructor(address _mybTokenBurner)
