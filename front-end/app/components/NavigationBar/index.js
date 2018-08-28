@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import Button from '../Button';
 import Constants from '../Constants';
-import SidebarMobile from './SidebarMobile';
+import SidebarMobile from './sidebarMobile';
 import HamburgerButton from './menu-icon.svg'
 import Img from '../Img';
 
