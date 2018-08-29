@@ -19,6 +19,7 @@ The Trust Dapp allows users to leave a Trust in the form of Ether for a chosen b
 
 [MyBit-Ropsten token](https://ropsten.etherscan.io/address/0xbb07c8c6e7CD15E2E6F944a5C2CAC056c5476151)
 
+<<<<<<< HEAD
 # Testing 
 * In the terminal run `ganache-cli`  (use -a flag to specify number of accounts ie. -a 20) 
 * Open another terminal window and navigate to Contracts/test 
@@ -34,5 +35,7 @@ The Trust Dapp allows users to leave a Trust in the form of Ether for a chosen b
 * bignumber.js   `npm install bignumber.js`
 * solidity-docgen  `npm install solidity-docgen`
 
+=======
+>>>>>>> ed150ca8a420a67897f8ecdf5240293a32d8aa7e
 #### ⚠️ Warning 
 This application is unstable and has not undergone any rigorous security audits. Use at your own risk. 
