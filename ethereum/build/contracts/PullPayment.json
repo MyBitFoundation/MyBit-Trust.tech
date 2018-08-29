@@ -1,0 +1,226 @@
+{
+  "contractName": "PullPayment",
+  "abi": [
+    {
+      "constant": false,
+      "inputs": [],
+      "name": "withdraw",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "pragma solidity ^0.4.24;\n\n// @notice allows contract to call a basic withdraw() function taking no parameters on another contract\ninterface PullPayment {\n \n\tfunction withdraw()\texternal returns (bool);\n\n}\n",
+  "sourcePath": "/home/dog/Code/mybit/microdapps/trust/ethereum/contracts/interfaces/PullPayment.sol",
+  "ast": {
+    "absolutePath": "/home/dog/Code/mybit/microdapps/trust/ethereum/contracts/interfaces/PullPayment.sol",
+    "exportedSymbols": {
+      "PullPayment": [
+        1023
+      ]
+    },
+    "id": 1024,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 1017,
+        "literals": [
+          "solidity",
+          "^",
+          "0.4",
+          ".24"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:24:6"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": null,
+        "fullyImplemented": false,
+        "id": 1023,
+        "linearizedBaseContracts": [
+          1023
+        ],
+        "name": "PullPayment",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": null,
+            "id": 1022,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": false,
+            "modifiers": [],
+            "name": "withdraw",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1018,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "174:2:6"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 1021,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1020,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1022,
+                  "src": "195:4:6",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 1019,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "195:4:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "194:6:6"
+            },
+            "scope": 1023,
+            "src": "157:44:6",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          }
+        ],
+        "scope": 1024,
+        "src": "130:74:6"
+      }
+    ],
+    "src": "0:205:6"
+  },
+  "legacyAST": {
+    "absolutePath": "/home/dog/Code/mybit/microdapps/trust/ethereum/contracts/interfaces/PullPayment.sol",
+    "exportedSymbols": {
+      "PullPayment": [
+        1023
+      ]
+    },
+    "id": 1024,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 1017,
+        "literals": [
+          "solidity",
+          "^",
+          "0.4",
+          ".24"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:24:6"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": null,
+        "fullyImplemented": false,
+        "id": 1023,
+        "linearizedBaseContracts": [
+          1023
+        ],
+        "name": "PullPayment",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": null,
+            "id": 1022,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": false,
+            "modifiers": [],
+            "name": "withdraw",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1018,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "174:2:6"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 1021,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1020,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1022,
+                  "src": "195:4:6",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 1019,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "195:4:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "194:6:6"
+            },
+            "scope": 1023,
+            "src": "157:44:6",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          }
+        ],
+        "scope": 1024,
+        "src": "130:74:6"
+      }
+    ],
+    "src": "0:205:6"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.4.24+commit.e67f0147.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "2.0.0",
+  "updatedAt": "2018-08-23T07:45:00.364Z"
+}
