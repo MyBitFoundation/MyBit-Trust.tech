@@ -19,5 +19,20 @@ The Trust Dapp allows users to leave a Trust in the form of Ether for a chosen b
 
 [MyBit-Ropsten token](https://ropsten.etherscan.io/address/0xbb07c8c6e7CD15E2E6F944a5C2CAC056c5476151)
 
+# Testing 
+* In the terminal run `ganache-cli`  (use -a flag to specify number of accounts ie. -a 20) 
+* Open another terminal window and navigate to Contracts/test 
+* run `truffle test testFileName.js` 
+* NOTE: Make sure bignumber.js is installed.  `npm install bignumber.js`
+
+# Compiling 
+* In the terminal run `ganache-cli`  
+* In another terminal navigate to /Contracts 
+* run `truffle compile` 
+
+# Dependencies 
+* bignumber.js   `npm install bignumber.js`
+* solidity-docgen  `npm install solidity-docgen`
+
 #### ⚠️ Warning 
 This application is unstable and has not undergone any rigorous security audits. Use at your own risk. 
