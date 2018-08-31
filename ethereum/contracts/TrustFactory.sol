@@ -1,7 +1,6 @@
 pragma solidity ^0.4.24;
 
 import './Trust.sol';
-import './SafeMath.sol';
 import './MyBitBurner.sol';
 
 
@@ -13,9 +12,9 @@ contract TrustFactory {
   bool public expired;    // When true, it will stop the factory from making more Trust contracts
   address public owner;    // Owner of the trust factory
 
-  MyBitBurner mybBurner;
+  MyBitBurner public mybBurner;         // The MyBitBurner contract instance
 
-  uint public mybFee = 250;     // How much MYB to burn in order to create a Trust
+  uint public mybFee = uint256(250 * 10**18);     // How much MYB to burn in order to create a Trust
 
   // @notice constructor: sets msg.sender as the owner, who has authority to close the factory
   constructor(address _mybTokenBurner)
@@ -42,17 +41,37 @@ contract TrustFactory {
   // @notice If called by owner, this function prevents more Trust contracts from being made once
   // @notice Old contracts will continue to function
   function closeFactory()
+  onlyOwner
   external {
-    require(msg.sender == owner);
     require (!expired);
     expired = true;
   }
 
+  // @notice can change how much MYB is burned for creating Trusts
   function changeMYBFee(uint _newFee)
+  onlyOwner
   external {
-    require(msg.sender == owner);
+    uint oldFee = mybFee; 
     mybFee = _newFee;
+    emit LogMYBFeeChange(oldFee, mybFee);
+  }
+
+  // @notice fallback function. Rejects all ether 
+  function ()
+  external { 
+    revert(); 
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  //                                            Modifiers
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  // @notice reverts if msg.sender isn't the owner
+  modifier onlyOwner {
+    require(msg.sender == owner);
+    _;
   }
 
   event LogNewTrust(address indexed _trustor, address indexed _beneficiary, address _trustAddress, uint _amount);
+  event LogMYBFeeChange(uint _oldFee, uint _newFee); 
 }

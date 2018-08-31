@@ -46,26 +46,4 @@ library SafeMath {
     return c;
   }
 
-  //--------------------------------------------------------------------------------------------------
-  // Returns fractional amount
-  //--------------------------------------------------------------------------------------------------
-  function getFractionalAmount(uint256 _amount, uint256 _percentage)
-  internal
-  pure
-  returns (uint256) {
-    return div(mul(_amount, _percentage), 100);
-  }
-
-  //--------------------------------------------------------------------------------------------------
-  // Convert bytes to uint
-  // TODO: needs testing: use SafeMath
-  //--------------------------------------------------------------------------------------------------
-  function bytesToUint(bytes b) internal pure returns (uint256) {
-      uint256 number;
-      for(uint i=0; i < b.length; i++){
-          number = number + uint(b[i]) * (2**(8 * (b.length - (i+1))));
-      }
-      return number;
-  }
-
 }
