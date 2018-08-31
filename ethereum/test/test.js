@@ -20,8 +20,8 @@ contract('Trust - Deploying and storing all contracts + validation', async (acco
 
   const tokenSupply = 100000;
   const tokenPerAccount = 1000;
-  const burnFee = 250;
 
+  let burnFee = 250;
   let originalBeneficiary; //Original beneficiary
 
   // Contract instances
@@ -74,6 +74,35 @@ contract('Trust - Deploying and storing all contracts + validation', async (acco
     assert.equal(true, authTrue);
   });
 
+  it('Fail to change MyB Fee', async() => {
+    try{
+      await trustFactory.changeMYBFee(200, {from: trustor});
+    }catch(e){
+      console.log('Only owner can change MyB fee');
+    }
+  });
+
+  it('Change MyB Fee', async() => {
+    burnFee = 200;
+    await trustFactory.changeMYBFee(burnFee);
+  });
+
+  it('Fail to deploy trust', async() => {
+    try{
+      await trustFactory.deployTrust(beneficiary, true, 4, {from: trustor});
+    }catch(e){
+      console.log('No money given to trust');
+    }
+  });
+
+  it('Fail to deploy trust', async() => {
+    try{
+      await trustFactory.deployTrust(beneficiary, true, 4, {from: trustor, value: (2 * WEI) });
+    }catch(e){
+      console.log('No permission given to burn MyB tokens');
+    }
+  });
+
   it('Deploy Trust contract', async() => {
     let balanceStart = await web3.eth.getBalance(trustor);
     console.log('Balance at Start: ' + balanceStart);
@@ -121,6 +150,7 @@ contract('Trust - Deploying and storing all contracts + validation', async (acco
       let expirationBefore = await trust.expiration();
       console.log('Old Expiration: ' + expirationBefore);
       //Change expiration to 0 more blocks
+
       await trust.changeExpiration(0, {from: trustor});
       assert.equal(0, await trust.blocksUntilExpiration());
     } catch(e) {
@@ -146,7 +176,7 @@ contract('Trust - Deploying and storing all contracts + validation', async (acco
     //Give MyBitBurner permission to handle user tokens (limit burnFee)
     await token.approve(burnerAddress, burnFee, {from: trustor});
     //Use trustFactory to deploy trust
-    tx = await trustFactory.deployTrust(beneficiary, true, 10, {from: trustor, value: (2 * WEI) });
+    tx = await trustFactory.deployTrust(beneficiary, true, 100, {from: trustor, value: (2 * WEI) });
     trustAddress = tx.logs[0].args._trustAddress;
     console.log('Trust Address: ' + trustAddress);
 
@@ -163,6 +193,22 @@ contract('Trust - Deploying and storing all contracts + validation', async (acco
     assert.equal((2 * WEI), await trust.trustBalance());
   });
 
+  it('Attemp to deposit in trust', async() => {
+    try{
+      await trust.depositTrust({value: WEI});
+    }catch(e){
+      console.log('Money already deposited in trust')
+    }
+  });
+
+  it('Fail to change beneficiary', async() => {
+    try{
+      await trust.changeBeneficiary('', {from: trustor});
+    }catch(e){
+      console.log('Cant change beneficiary to empty address')
+    }
+  });
+
   it('Change Beneficiary', async() => {
     originalBeneficiary = await trust.beneficiary();
     console.log('Old Beneficiary: ' + originalBeneficiary);
@@ -177,18 +223,18 @@ contract('Trust - Deploying and storing all contracts + validation', async (acco
   it("Expect expiration change to fail", async() => {
     try {
       await trust.changeExpiration(-1, {from: trustor});
+      return false;
     } catch(e) {
-        console.log("EVM error: Can't change expiration by negative number");
-        return true;
+      console.log("EVM error: Can't change expiration by negative number");
     }
   });
 
   it("Expect withdraw to fail: Expiration", async() => {
     try {
       await trust.withdraw({from: currentBeneficiary});
+      return false;
     } catch(e) {
-        console.log("EVM error: Expiration has not been reached");
-        return true;
+      console.log("EVM error: Expiration has not been reached");
     }
   });
 
@@ -197,6 +243,9 @@ contract('Trust - Deploying and storing all contracts + validation', async (acco
     console.log('Current Block: ' + blockNumber);
     let expirationBefore = await trust.expiration();
     console.log('Old Expiration: ' + expirationBefore);
+    let blocksTilExpiration = BigNumber(await trust.blocksUntilExpiration());
+    console.log('Blocks til: ' + blocksTilExpiration);
+    assert.equal(blocksTilExpiration.isGreaterThan(0), true);
     //Change expiration to 0
     await trust.changeExpiration(0, {from: trustor});
     blockNumber = await web3.eth.getBlock('latest').number;
@@ -273,7 +322,7 @@ contract('Trust - Deploying and storing all contracts + validation', async (acco
     await token.approve(burnerAddress, burnFee, {from: trustor});
 
     //Use trustFactory to deploy trust
-    tx = await trustFactory.deployTrust(eqAddress, true, 4, {from: trustor, value: (12 * WEI) });
+    tx = await trustFactory.deployTrust(eqAddress, false, 2, {from: trustor, value: (12 * WEI) });
     trustAddress = tx.logs[0].args._trustAddress;
 
     //Instantiate deployed trust contract
@@ -281,14 +330,32 @@ contract('Trust - Deploying and storing all contracts + validation', async (acco
 
     assert.equal((12 * WEI), await trust.trustBalance());
 
-    await trust.changeExpiration(0, {from: trustor});
+    //await trust.changeExpiration(0, {from: trustor});
     //assert.equal(0, await trust.blocksUntilExpiration());
     //await sleep(1000);
+  });
 
+  it('Attempt to revoke irrevocable trust', async() => {
+    try{
+      await trust.revoke({from: trustor});
+    }catch(e){
+      console.log('This trust cannot be revoked');
+    }
+  });
+
+  it('Fail to get funds', async() => {
+    try{
+      await eqDistribution.getFunds(web3.eth.accounts[9], {from: trustor});
+    } catch(e) {
+      console.log('Cant get funds from that address');
+    }
+  });
+
+  it('Get funds', async() => {
+    advanceBlock();
+    let blocksTil = await trust.blocksUntilExpiration()
+    console.log(Number(blocksTil));
     await eqDistribution.getFunds(trustAddress, {from: trustor});
-    //console.log(getFundsTrue);//Does not return true
-    //assert.equal(getFundsTrue, true);
-
   });
 
   it('Withdraw funds to beneficiaries', async() => {
@@ -301,5 +368,45 @@ contract('Trust - Deploying and storing all contracts + validation', async (acco
     assert.equal(BigNumber(b1Before).lt(b1After), true);
   });
 
+  it('Fail to close factory', async() => {
+    try {
+      await trustFactory.closeFactory({from: trustor});
+    }catch(e) {
+      console.log('Only owner may close factory...you filthy proletariat scum...now get back to work!')
+    }
+  });
+
+  it('Close factory', async() => {
+    await trustFactory.closeFactory();
+  });
+
+  it('Fail to close factory', async() => {
+    try {
+      await trustFactory.closeFactory();
+    }catch(e) {
+      console.log('Factory is already closed');
+    }
+  });
+
+  it('Fail to deploy trust', async() => {
+    try{
+      await trustFactory.deployTrust(beneficiary, true, 4, {from: trustor, value: (2 * WEI) });
+    }catch(e){
+      console.log('Factory is closed');
+    }
+  });
+
 
 });
+
+function advanceBlock () {
+  return new Promise((resolve, reject) => {
+    web3.currentProvider.sendAsync({
+      jsonrpc: '2.0',
+      method: 'evm_mine',
+      id: Date.now(),
+    }, (err, res) => {
+      return err ? reject(err) : resolve(res);
+    });
+  });
+}

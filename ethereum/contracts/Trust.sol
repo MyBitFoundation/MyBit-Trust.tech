@@ -55,14 +55,12 @@ contract Trust {
 	external
 	lessThan(block.number, expiration)
 	onlySender(trustor)
-	isRevocable
-	returns (bool) {
+	isRevocable {
 		uint amount = trustBalance;
 		trustBalance = 0;
 		trustor.transfer(amount);
 		emit LogTrustRevoked(trustor, amount);
 		selfdestruct(msg.sender);
-		return true;
 	}
 
 	// @notice _beneficiary can withdraw trustBalance once expiration is reached
