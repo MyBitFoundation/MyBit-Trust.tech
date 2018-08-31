@@ -36,7 +36,7 @@ contract Trust {
 		expiration = block.number.add(_expiration);
 	}
 
-	// @notice (payable) trustor can deposit WEI here once 
+	// @notice (payable) trustor can deposit WEI here once
 	// @dev this function is called by the TrustFactory
 	function depositTrust()
 	external
@@ -54,12 +54,10 @@ contract Trust {
 	external
 	lessThan(block.number, expiration)
 	onlySender(trustor)
-	isRevocable
-	returns (bool) {
+	isRevocable {
 		emit LogTrustRevoked(msg.sender, trustBalance);
 		delete trustBalance;
 		selfdestruct(msg.sender);
-		return true;
 	}
 
 	// @notice _beneficiary can withdraw trustBalance once expiration is reached
@@ -104,10 +102,10 @@ contract Trust {
 		return true;
 	}
 
-	// @notice fallback function. Rejects all ether 
+	// @notice fallback function. Rejects all ether
 	function ()
-	external { 
-		revert(); 
+	external {
+		revert();
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
