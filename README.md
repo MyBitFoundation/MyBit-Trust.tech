@@ -1,5 +1,5 @@
 # MyBit Trust
-[![CircleCI](https://circleci.com/gh/MyBitFoundation/MyBit-Trust.tech.svg?style=shield)](https://circleci.com/gh/MyBitFoundation/MyBit-Trust.tech)
+[![CircleCI](https://circleci.com/gh/MyBitFoundation/MyBit-Trust.tech.svg?style=shield)](https://circleci.com/gh/MyBitFoundation/MyBit-Trust.tech) [![Coverage Status](https://coveralls.io/repos/github/MyBitFoundation/MyBit-Trust.tech/badge.svg?branch=feature%2Fcoverage)](https://coveralls.io/github/MyBitFoundation/MyBit-Trust.tech?branch=feature%2Fcoverage)
 
 The Trust Dapp allows users to leave a [Trust](https://www.investopedia.com/terms/t/trust-fund.asp) in the form of Ether for a chosen beneficiary after a chosen amount of time, measured in Ethereum blocks. Users are able to choose the amount of Ether, the length of time and whether or not they want the trust to be revocable. 
 
