@@ -12,3 +12,4 @@ jobs:
             command: yarn blockchain
             background: true
         - run: yarn test
+        - run: yarn coverage
