@@ -5,7 +5,7 @@
       "distribution_EqualDistributionLight"
     ],
     "Interfaces": [
-      "interfaces_PullPayment",
+      "interfaces_PullPayment"
     ],
     "Token": [
       "token_BurnableERC20",
