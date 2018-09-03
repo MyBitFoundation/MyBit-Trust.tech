@@ -19,6 +19,31 @@ The Trust Dapp allows users to leave a Trust in the form of Ether for a chosen b
 
 [MyBit-Ropsten token](https://ropsten.etherscan.io/address/0xbb07c8c6e7CD15E2E6F944a5C2CAC056c5476151)
 
+# Contracts
+
+# Trust 
+The Trust smart-contracts are created through the TrustFactory contract, when deployTrust() is called. 
+
+### Requirements 
+* BigNumber.js - `npm install bignumber.js`
+
+* Truffle v4.1.11 (core: 4.1.11)  `npm install -g truffle` 
+
+* Ganache-Cli   `npm install -g ganache-cl`
+
+* Solidity v0.4.24 (solc-js)  `npm install -g solc`
+
+### Testing 
+To run tests first in the terminal run `ganache-cli`
+
+* Open another tab in terminal and go to folder `ethereum/tests` 
+
+* Run `truffle compile` 
+
+* Run `truffle test test.js` 
+
+:pencil2:  All contracts are written in Solidity.
+
 # Testing 
 * In the terminal run `ganache-cli`  (use -a flag to specify number of accounts ie. -a 20) 
 * Open another terminal window and navigate to Contracts/test 
