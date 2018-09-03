@@ -12,3 +12,8 @@ jobs:
             command: yarn blockchain
             background: true
         - run: yarn test
+        - run: yarn coverage
+        
+notify:
+  webhooks:
+    - url: https://coveralls.io/webhook?repo_token=$COVERALLS_REPO_TOKEN
