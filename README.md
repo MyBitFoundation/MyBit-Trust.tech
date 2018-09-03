@@ -42,5 +42,21 @@ Run tests
 
 `yarn compile`
 
+## Documentation
+
+```
+cd docs/website
+yarn build
+```
+
+To publish to GitHub Pages
+
+```
+cd docs/website
+GIT_USER=<GIT_USER> \
+  USE_SSH=true \
+  yarn run publish-gh-pages
+```
+
 ### ⚠️ Warning 
 This application is unstable and has not undergone any rigorous security audits. Use at your own risk. 
