@@ -1,0 +1,24 @@
+{
+  "docs-api": {
+    "Distribution": [
+      "distribution_EqualDistribution",
+      "distribution_EqualDistributionLight"
+    ],
+    "Interfaces": [
+      "interfaces_PullPayment"
+    ],
+    "Token": [
+      "token_BurnableERC20",
+      "token_ERC20",
+      "token_ERC20_ApproveAndCallFallBack",
+      "token_ERC20Interface"
+    ],
+    "Other": [
+      "Migrations",
+      "MyBitBurner",
+      "SafeMath",
+      "Trust",
+      "TrustFactory"
+    ]
+  }
+}
