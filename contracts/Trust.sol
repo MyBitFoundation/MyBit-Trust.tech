@@ -104,7 +104,8 @@ contract Trust {
 
 	// @notice fallback function. Rejects all ether
 	function ()
-	external {
+	external
+	payable {
 		revert();
 	}
 

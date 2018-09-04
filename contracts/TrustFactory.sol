@@ -18,9 +18,9 @@ contract TrustFactory {
 
   // @notice constructor: sets msg.sender as the owner, who has authority to close the factory
   constructor(address _mybTokenBurner)
-  public {  
-    owner = msg.sender; 
-    mybBurner = MyBitBurner(_mybTokenBurner); 
+  public {
+    owner = msg.sender;
+    mybBurner = MyBitBurner(_mybTokenBurner);
   }
 
   // @notice trustors can deploy new trust contracts here
@@ -51,16 +51,18 @@ contract TrustFactory {
   function changeMYBFee(uint _newFee)
   onlyOwner
   external {
-    uint oldFee = mybFee; 
+    uint oldFee = mybFee;
     mybFee = _newFee;
     emit LogMYBFeeChange(oldFee, mybFee);
   }
 
-  // @notice fallback function. Rejects all ether 
+  // @notice fallback function. Rejects all ether
   function ()
-  external { 
-    revert(); 
-  }
+	external
+	payable {
+		revert();
+	}
+
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   //                                            Modifiers
@@ -73,5 +75,5 @@ contract TrustFactory {
   }
 
   event LogNewTrust(address indexed _trustor, address indexed _beneficiary, address _trustAddress, uint _amount);
-  event LogMYBFeeChange(uint _oldFee, uint _newFee); 
+  event LogMYBFeeChange(uint _oldFee, uint _newFee);
 }
