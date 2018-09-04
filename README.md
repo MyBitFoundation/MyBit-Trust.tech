@@ -42,6 +42,18 @@ Run tests
 
 `yarn compile`
 
+## Code Coverage
+
+Install solidity-coverage
+
+`npm install --save-dev solidity-coverage`
+
+Run code coverage
+
+`./node_modules/.bin/solidity-coverage`
+
+Coverage tests can be founds at 'coverage/index.html'
+
 ## Documentation
 
 ```
