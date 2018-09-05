@@ -38,6 +38,10 @@ Run tests
 
 ✏️ All contracts are written in [Solidity](https://solidity.readthedocs.io/en/v0.4.24/) version 0.4.24.
 
+## Compiling
+
+`yarn compile`
+
 ## Code Coverage
 
 Download solidity-coverage locally
@@ -49,10 +53,6 @@ Run solidity-coverage
 `./node_modules/.bin/solidity-coverage`
 
 Coverage reports can be accessed at 'coverage/index.html'
-
-## Compiling
-
-`yarn compile`
 
 ## Documentation
 
