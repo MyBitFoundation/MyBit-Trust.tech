@@ -144,17 +144,17 @@ contract('Trust - Deploying and storing all contracts + validation', async (acco
 
   it('Fail to pay trust factory contract', async() => {
     try{
-      await web3.eth.sendTransaction({from:trustor,to:trustFactory.address, value:2*WEI});
+      await web3.eth.sendTransaction({from:trustor,to:trustFactory.address, value:0.1*WEI});
     }catch(e){
-      console.log('Cannot send money directly to a trust factory contract')
+      console.log('Cannot send money directly to a trust factory contract');
     }
   });
 
   it('Fail to pay trust contract', async() => {
     try{
-      await web3.eth.sendTransaction({from:trustor,to:trust.address, value:2*WEI});
+      await web3.eth.sendTransaction({from:trustor,to:trustAddress, value:0.1*WEI});
     }catch(e){
-      console.log('Cannot send money directly to a trust contract')
+      console.log('Cannot send money directly to a trust contract');
     }
   });
 
