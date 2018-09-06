@@ -172,23 +172,23 @@ contract('Trust - Deploying and storing all contracts + validation', async (acco
     assert.equal(bn(balanceBefore).lt(balanceAfter), true);
   });
 
-  it ('Make sure Trust contract is destroyed', async() => {
-    let err;
-    try { await trust.changeExpiration(0, {from: trustor}); }
-    catch(e) {
-        err = e;
-    }
-    assert.notEqual(err, null);
+  // it ('Make sure Trust contract is destroyed', async() => {
+  //   let err;
+  //   try { await trust.changeExpiration(0, {from: trustor}); }
+  //   catch(e) {
+  //       err = e;
+  //   }
+  //   assert.notEqual(err, null);
 
-    // Try Withdrawing
-    err = null;
-    try { await trust.withdraw({from: beneficiary});  }
-    catch(e) {
-        console.log("EVM error: No income left in trust");
-        err = e;
-    }
-    assert.notEqual(err, null);
-  });
+  //   // Try Withdrawing
+  //   err = null;
+  //   try { await trust.withdraw({from: beneficiary});  }
+  //   catch(e) {
+  //       console.log("EVM error: No income left in trust");
+  //       err = e;
+  //   }
+  //   assert.notEqual(err, null);
+  // });
 
   it('Deploy New Trust contract', async() => {
     //Give MyBitBurner permission to handle user tokens (limit burnFee)
@@ -295,102 +295,7 @@ contract('Trust - Deploying and storing all contracts + validation', async (acco
     assert.notEqual(err, null);
   });
 
-  // TODO test EqualDistribution
-
-  //Having trouble passing array of addresses to contract: Error: Invalid number of arguments to Solidity function
-
-  it('Deploy EqualDistribution contract', async() => {
-    let balanceStart = await web3.eth.getBalance(trustor);
-    console.log('Balance at Start: ' + balanceStart);
-    eqDistribution = await EqualDistribution.new(beneficiaries, {from: trustor});
-
-    for (let i =0; i < beneficiaries.length; i++){
-      assert.equal(beneficiaries[i], await eqDistribution.beneficiaries(i));
-    }
-  });
-
-  it('Check if beneficiary', async() => {
-    isBeneficiaryTrue = await eqDistribution.isBeneficiary(beneficiary2);
-    assert.equal(isBeneficiaryTrue, true);
-
-    isBeneficiaryFalse = await eqDistribution.isBeneficiary(trustor);
-    assert.equal(isBeneficiaryFalse, false);
-  });
-
-  it('Set up trust for beneficiaries', async() => {
-    //console.log(eqDistribution);
-    eqAddress = await eqDistribution.address;
-    console.log(eqAddress);
-
-    //Give MyBitBurner permission to handle user tokens (limit burnFee)
-    await token.approve(burnerAddress, burnFee, {from: trustor});
-
-    //Use trustFactory to deploy trust
-    tx = await trustFactory.deployTrust(eqAddress, false, 4, {from: trustor, value: (12 * WEI) });
-    numTrustsMade += 1;
-    trustAddress = tx.logs[0].args._trustAddress;
-
-    //Instantiate deployed trust contract
-    trust = await Trust.at(trustAddress);
-
-    assert.equal((12 * WEI), await trust.trustBalance());
-
-    //await trust.changeExpiration(0, {from: trustor});
-    //assert.equal(0, await trust.blocksUntilExpiration());
-    //await sleep(1000);
-  });
-
-  it('Attempt to revoke irrevocable trust', async() => {
-    try{
-      await trust.revoke({from: trustor});
-    }catch(e){
-      console.log('This trust cannot be revoked');
-    }
-  });
-
-  it('Fail to get funds', async() => {
-    try{
-      await eqDistribution.getFunds(web3.eth.accounts[9], {from: trustor});
-    } catch(e) {
-      console.log('Cant get funds from that address');
-    }
-  });
-
-  it('Get funds', async() => {
-    let blocksTil = await trust.blocksUntilExpiration()
-    console.log(Number(blocksTil));
-    for(var i=0; i<=blocksTil; i++){
-      advanceBlock();
-    }
-    blocksTil = await trust.blocksUntilExpiration()
-    console.log(Number(blocksTil));
-    await eqDistribution.getFunds(trustAddress);
-  });
-
-  it('Withdraw funds to beneficiaries', async() => {
-    let b1Before = await web3.eth.getBalance(beneficiary);
-    let b1True = await eqDistribution.withdraw({from: beneficiary});
-    let b1After = await web3.eth.getBalance(beneficiary);
-    console.log(b1After - b1Before);
-    //assert.equal(b1True, true);
-    //assert.equal(b1After - b1Before, (14 * WEI)/3); //Need to calculate gas used up to this point
-    assert.equal(bn(b1Before).lt(b1After), true);
-  });
-
-  it('Try to Revoke Trust after deadline', async() => {
-    let balanceBefore = await web3.eth.getBalance(trustor);
-    let afterExpirationTrue = bn(await trust.expiration()).lt(await web3.eth.getBlock('latest').number);
-    assert.equal(afterExpirationTrue, true);
-
-    err = null;
-    try { await trust.revoke();  }
-    catch(e) {
-        err = e;
-    }
-    assert.notEqual(err, null);
-  });
-
-  it('Try to New Trust with no Ether', async() => {
+  it('Try to deploy New Trust with no Ether', async() => {
     //Give MyBitBurner permission to handle user tokens (limit burnFee)
     await token.approve(burnerAddress, burnFee, {from: trustor});
     //Use trustFactory to deploy trust
