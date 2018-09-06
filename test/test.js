@@ -4,7 +4,6 @@ var bn = require('bignumber.js');
 const Token = artifacts.require("./token/ERC20.sol");
 const Trust = artifacts.require("./Trust.sol");
 const TrustFactory = artifacts.require("./TrustFactory.sol");
-const EqualDistribution = artifacts.require("./distrubtion/EqualDistribution.sol");
 const MyBitBurner = artifacts.require("./MyBitBurner.sol");
 
 const WEI = 1000000000000000000;
@@ -31,7 +30,7 @@ contract('Trust - Deploying and storing all contracts + validation', async (acco
   let trust;   // Trust contract instance
   let trustFactory;  // TrustFactory contract instance
   let myBitBurner;   // MyBitBurner contract instance
-  let eqDistribution;      // EqualDistribution instance
+
 
   // Contract addresses
   let tokenAddress;
