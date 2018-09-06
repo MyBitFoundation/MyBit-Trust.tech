@@ -139,6 +139,7 @@ contract('Trust - Deploying and storing all contracts + validation', async (acco
     let expiration = await trust.expiration();
     let blockNumber = await web3.eth.getBlock('latest').number;
     assert.equal(blockNumber + trustExpiration, expiration);
+    assert.equal(trustExpiration-1, await trust.blocksUntilExpiration());
   });
 
   it('Fail to pay trust factory contract', async() => {
@@ -171,23 +172,23 @@ contract('Trust - Deploying and storing all contracts + validation', async (acco
     assert.equal(bn(balanceBefore).lt(balanceAfter), true);
   });
 
-  // it ('Make sure Trust contract is destroyed', async() => {
-  //   let err;
-  //   try { await trust.changeExpiration(0, {from: trustor}); }
-  //   catch(e) {
-  //       err = e;
-  //   }
-  //   assert.notEqual(err, null);
+   it ('Make sure Trust contract is destroyed', async() => {
+     let err;
+     try { await trust.changeExpiration(0, {from: trustor}); }
+     catch(e) {
+         err = e;
+     }
+     assert.notEqual(err, null);
 
-  //   // Try Withdrawing
-  //   err = null;
-  //   try { await trust.withdraw({from: beneficiary});  }
-  //   catch(e) {
-  //       console.log("EVM error: No income left in trust");
-  //       err = e;
-  //   }
-  //   assert.notEqual(err, null);
-  // });
+     // Try Withdrawing
+     err = null;
+     try { await trust.withdraw({from: beneficiary});  }
+     catch(e) {
+         console.log("EVM error: No income left in trust");
+         err = e;
+     }
+     assert.notEqual(err, null);
+  });
 
   it('Deploy New Trust contract', async() => {
     //Give MyBitBurner permission to handle user tokens (limit burnFee)
