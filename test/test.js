@@ -174,11 +174,11 @@ contract('Trust - Deploying and storing all contracts + validation', async (acco
   });
 
    it ('Make sure Trust contract is destroyed', async() => {
-     /*
+
      let err;
      try {await trust.changeExpiration(0, {from: trustor});}
      catch(e) {
-         err = e;
+         err = true;
      }
      assert.notEqual(err, undefined);
 
@@ -187,14 +187,9 @@ contract('Trust - Deploying and storing all contracts + validation', async (acco
      try { await trust.withdraw({from: beneficiary});  }
      catch(e) {
          console.log("EVM error: No income left in trust");
-         err = e;
+         err = true;
      }
      assert.notEqual(err, undefined);
-     */
-     tx = await trust.changeExpiration(0, {from: trustor});
-     console.log(tx);
-     tx = await trust.withdraw({from: beneficiary});
-     console.log(tx);
   });
 
   it('Deploy New Trust contract', async() => {
