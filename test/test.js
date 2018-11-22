@@ -175,7 +175,7 @@ contract('Trust - Deploying and storing all contracts + validation', async (acco
 
    it ('Make sure Trust contract is destroyed', async() => {
      let err;
-     try {await trust.changeExpiration(0, {from: trustor});}
+     try { tx = await trust.changeExpiration(0, {from: trustor});}
      catch(e) {
         err = "Error";
      }
@@ -185,7 +185,7 @@ contract('Trust - Deploying and storing all contracts + validation', async (acco
    it('Try to withdraw', async() => {
      // Try Withdrawing
      let err;
-     try { await trust.withdraw({from: beneficiary});  }
+     try { tx = await trust.withdraw({from: beneficiary});  }
      catch(e) {
         console.log("EVM error: No income left in trust");
         err = "Error";
