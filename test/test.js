@@ -164,8 +164,9 @@ contract('Trust - Deploying and storing all contracts + validation', async (acco
     assert.equal(beforeExpirationTrue, true);
 
     // Revoke trust
-    await trust.revoke({from: trustor});
+    tx = await trust.revoke({from: trustor});
     console.log('Trust Revoked');
+    console.log(tx.logs[0].args);
 
     // Check variables
     let balanceAfter = await web3.eth.getBalance(trustor);   // TODO: should get actual gas used in the transaction
@@ -174,9 +175,8 @@ contract('Trust - Deploying and storing all contracts + validation', async (acco
 
    it ('Make sure Trust contract is destroyed', async() => {
      let err;
-     try {
-       await trust.changeExpiration(0, {from: trustor});
-     } catch(e) {
+     try {await trust.changeExpiration(0, {from: trustor});}
+     catch(e) {
          err = e;
      }
      assert.notEqual(err, undefined);
