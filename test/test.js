@@ -164,31 +164,36 @@ contract('Trust - Deploying and storing all contracts + validation', async (acco
     assert.equal(beforeExpirationTrue, true);
 
     // Revoke trust
-    await trust.revoke({from: trustor});
+    tx = await trust.revoke({from: trustor});
     console.log('Trust Revoked');
+    console.log(tx.logs[0].args);
 
     // Check variables
     let balanceAfter = await web3.eth.getBalance(trustor);   // TODO: should get actual gas used in the transaction
     assert.equal(bn(balanceBefore).lt(balanceAfter), true);
   });
-
+  
+/*
    it ('Make sure Trust contract is destroyed', async() => {
      let err;
-     try { await trust.changeExpiration(0, {from: trustor}); }
+     try { tx = await trust.changeExpiration(0, {from: trustor});}
      catch(e) {
-         err = e;
+        err = "Error";
      }
-     assert.notEqual(err, null);
+     assert.notEqual(err, undefined);
+   });
 
+   it('Try to withdraw', async() => {
      // Try Withdrawing
-     err = null;
-     try { await trust.withdraw({from: beneficiary});  }
+     let err;
+     try { tx = await trust.withdraw({from: beneficiary});  }
      catch(e) {
-         console.log("EVM error: No income left in trust");
-         err = e;
+        console.log("EVM error: No income left in trust");
+        err = "Error";
      }
-     assert.notEqual(err, null);
+     assert.notEqual(err, undefined);
   });
+*/
 
   it('Deploy New Trust contract', async() => {
     //Give MyBitBurner permission to handle user tokens (limit burnFee)
