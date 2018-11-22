@@ -172,7 +172,8 @@ contract('Trust - Deploying and storing all contracts + validation', async (acco
     let balanceAfter = await web3.eth.getBalance(trustor);   // TODO: should get actual gas used in the transaction
     assert.equal(bn(balanceBefore).lt(balanceAfter), true);
   });
-
+  
+/*
    it ('Make sure Trust contract is destroyed', async() => {
      let err;
      try { tx = await trust.changeExpiration(0, {from: trustor});}
@@ -192,6 +193,7 @@ contract('Trust - Deploying and storing all contracts + validation', async (acco
      }
      assert.notEqual(err, undefined);
   });
+*/
 
   it('Deploy New Trust contract', async() => {
     //Give MyBitBurner permission to handle user tokens (limit burnFee)
