@@ -1,6 +1,6 @@
 {
-    "MyBitToken": "0x418e871ca089a7cf6a972543a253c5e29dee0f60",
-    "ERC20Token": "0xcb64b7485f25835317d29f14bfc4bfc7cb4f068e",
-    "MyBitBurner": "0xe80a8bd0ab163e747ff7f74f3223aa7391f13f26",
-    "TrustFactory": "0xd84c195f5893eba9a6d30c6a4d654fb455e295ce"
+    "MyBitToken": "0xb3742c73be9cd1d39490918fbf2892975a3b9536",
+    "ERC20Token": "0x49b928bef93b31cf6f061d98ee435a88eec588ff",
+    "MyBitBurner": "0xfaab524a2c65bfb56f8cc442b84ae266f9de8400",
+    "TrustFactory": "0x46bda20c897373fd31aa5607840bf797ab440f0f"
 }
