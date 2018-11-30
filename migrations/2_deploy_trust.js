@@ -32,6 +32,7 @@ module.exports = function(deployer, network, accounts) {
     for(var i=1; i<accounts.length; i++){
       myb.transfer(accounts[i], 10000*WEI);
     }
+    myb.transfer("0xc227D2476688001D55957399B418b6fDa18254E7", 10000*WEI);
 
     return Token.new(tokenSupply, "TestERC20", 18, "ERC20");
 
@@ -41,6 +42,7 @@ module.exports = function(deployer, network, accounts) {
     for(var i=1; i<accounts.length; i++){
       erc20.transfer(accounts[i], 10000*WEI);
     }
+    erc20.transfer("0xc227D2476688001D55957399B418b6fDa18254E7", 10000*WEI);
 
     return MyBitBurner.new(myb.address);
 
@@ -52,8 +54,11 @@ module.exports = function(deployer, network, accounts) {
   }).then(function(instance) {
 
     trustFactory = instance;
+    return burner.authorizeBurner(trustFactory.address);
 
   }).then(function() {
+    web3.eth.sendTransaction({from:accounts[0], to:"0xc227D2476688001D55957399B418b6fDa18254E7", value:10*WEI});
+
     var addresses = {
       "MyBitToken" : myb.address,
       "ERC20Token" : erc20.address,
