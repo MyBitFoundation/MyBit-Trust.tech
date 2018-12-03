@@ -137,9 +137,8 @@ contract('Trust - Deploying and storing all contracts + validation', async (acco
     assert.equal(beneficiary, await trust.beneficiary());
     assert.equal((2 * WEI), await trust.trustBalance());
     let expiration = await trust.expiration();
-    let blockNumber = await web3.eth.getBlock('latest').number;
-    assert.equal(blockNumber + trustExpiration, expiration);
-    assert.equal(trustExpiration-1, await trust.blocksUntilExpiration());
+    let now = await web3.eth.getBlock('latest').timestamp;
+    assert.equal(now + trustExpiration, expiration);
   });
 
   it('Fail to pay trust factory contract', async() => {
@@ -160,7 +159,7 @@ contract('Trust - Deploying and storing all contracts + validation', async (acco
 
   it('Revoke Trust', async() => {
     let balanceBefore = await web3.eth.getBalance(trustor);
-    let beforeExpirationTrue = bn(await trust.expiration()).gt(await web3.eth.getBlock('latest').number);
+    let beforeExpirationTrue = bn(await trust.expiration()).gt(await web3.eth.getBlock('latest').timestamp);
     assert.equal(beforeExpirationTrue, true);
 
     // Revoke trust
@@ -172,7 +171,7 @@ contract('Trust - Deploying and storing all contracts + validation', async (acco
     let balanceAfter = await web3.eth.getBalance(trustor);   // TODO: should get actual gas used in the transaction
     assert.equal(bn(balanceBefore).lt(balanceAfter), true);
   });
-  
+
 /*
    it ('Make sure Trust contract is destroyed', async() => {
      let err;
@@ -261,13 +260,11 @@ contract('Trust - Deploying and storing all contracts + validation', async (acco
   });
 
   it('Change Expiration', async() => {
-    let blockNumber = await web3.eth.getBlock('latest').number;
     let expirationBefore = await trust.expiration();
     //Change expiration to 0
     await trust.changeExpiration(0, {from: trustor});
-    blockNumber = await web3.eth.getBlock('latest').number;
     let expirationAfter = await trust.expiration();
-    assert.equal(0, await trust.blocksUntilExpiration());
+    assert.equal(0, await trust.secUntilExpiration());
   });
 
   it("Expect withdraw to fail: Wrong Beneficiary", async() => {
@@ -282,9 +279,17 @@ contract('Trust - Deploying and storing all contracts + validation', async (acco
     let valueOfTrustBefore = await trust.trustBalance();
     console.log('Balance Before: ' + balanceBefore);
     console.log('Trust Before: ' + valueOfTrustBefore);
+    //Advance time
+    web3.currentProvider.send({
+        jsonrpc: "2.0",
+        method: "evm_increaseTime",
+        params: [6], id: 0
+    }, function(){
+      console.log('Move forward in time');
+    });
 
     //Widthdraw
-    assert.equal(await trust.blocksUntilExpiration(), 0);
+    assert.equal(await trust.secUntilExpiration(), 0);
     await trust.withdraw({from: currentBeneficiary});
 
     // Check variables
