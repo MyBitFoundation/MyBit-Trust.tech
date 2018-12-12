@@ -142,9 +142,6 @@ contract('Trust - Using ERC20 Token', async (accounts) => {
     assert.equal(trustor, await trust.trustor());
     assert.equal(beneficiary, await trust.beneficiary());
     assert.equal(trustBalance, await trust.trustBalance());
-    let expiration = await trust.expiration();
-    let now = await web3.eth.getBlock('latest').timestamp;
-    assert.equal(now + trustExpiration, expiration);
   });
 
   it('Attemp to deposit in trust', async() => {
