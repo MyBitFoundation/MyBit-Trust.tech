@@ -277,6 +277,13 @@ contract('Trust - Using ERC20 Token', async (accounts) => {
     assert.notEqual(err, null);
   });
 
+  it('Fail to pay trust contract', async() => {
+    let err;
+    try{await web3.eth.sendTransaction({from:trustor,to:trust.address, value:0.1*WEI});}
+    catch(e) { err = e; }
+    assert.notEqual(err, null);
+  });
+
   it('Revoke Trust', async() => {
     let balanceBefore = await erc20.balanceOf(trustor);
     let trustBalance = await trust.trustBalance();
@@ -288,6 +295,30 @@ contract('Trust - Using ERC20 Token', async (accounts) => {
     // Check variables
     let balanceAfter = await erc20.balanceOf(trustor);
     assert.equal(bn(balanceBefore).plus(trustBalance).eq(balanceAfter), true);
+  });
+
+  it('Fail to deploy ERC20 Trust - burner not approved', async() => {
+    let err;
+    try {
+      await trustFactory.createTrustERC20(beneficiary, true, 10, erc20Address, {from: trustor});
+    }
+    catch(e) { err = e; }
+    assert.notEqual(err, null);
+  });
+
+  it("Close contract factory", async() => {
+    await trustFactory.closeFactory();
+    assert.equal(true, await trustFactory.expired());
+  });
+
+  it('Fail to deploy ERC20 Trust - factory expired', async() => {
+    let err;
+    try {
+      await token.approve(burnerAddress, burnFee, {from: trustor});
+      await trustFactory.createTrustERC20(beneficiary, true, 10, erc20Address, {from: trustor});
+    }
+    catch(e) { err = e; }
+    assert.notEqual(err, null);
   });
 
 });
