@@ -179,6 +179,13 @@ contract('Trust - Using ERC20 Token', async (accounts) => {
     assert.equal(0, await trust.secUntilExpiration());
   });
 
+  it("Expect withdraw to fail: Wrong Beneficiary", async() => {
+    let err;
+    try { await trust.withdraw({from: beneficiary2}); }
+    catch(e) { err = e;  }
+    assert.notEqual(err, null);
+  });
+
   it('Withdraw', async() => {
     let balanceETHBefore = await web3.eth.getBalance(beneficiary);
     let balanceERC20Before = await erc20.balanceOf(beneficiary);
@@ -213,8 +220,25 @@ contract('Trust - Using ERC20 Token', async (accounts) => {
 
   it("Expect withdraw to fail: Trust already withdrawn", async() => {
     let err;
-    try { await trust.withdraw({from: currentBeneficiary}); }
+    try { await trust.withdraw({from: beneficiary}); }
     catch(e) { err = e; }
+    assert.notEqual(err, null);
+  });
+
+  it('Fail to over depoist', async() => {
+    let trustBalance = (2 * WEI);
+
+    await token.approve(burnerAddress, burnFee, {from: trustor});
+    let trustExpiration = 10;
+    let tx = await trustFactory.createTrustERC20(beneficiary, true, trustExpiration, erc20Address, {from: trustor});
+    let trustAddress = tx.logs[0].args._trustAddress;
+
+    let err;
+    try{
+      trust = await Trust.at(trustAddress);
+      await erc20.approve(trustAddress, tokenPerAccount, {from: trustor});
+      await trust.depositTrust({from: trustor, value: tokenPerAccount});
+    }catch(e) { err = e; }
     assert.notEqual(err, null);
   });
 
@@ -229,6 +253,21 @@ contract('Trust - Using ERC20 Token', async (accounts) => {
     trust = await Trust.at(trustAddress);
     await erc20.approve(trustAddress, trustBalance, {from: trustor});
     await trust.depositTrust({from: trustor, value: trustBalance});
+  });
+
+  it('Fail to change beneficiary', async() => {
+    let err;
+    try{
+      await trust.changeBeneficiary('', {from: trustor});
+    }catch(e) { err = e; }
+    assert.notEqual(err, null);
+  });
+
+  it('Change Beneficiary', async() => {
+    //Change beneficiary to the trustor
+    await trust.changeBeneficiary(beneficiary2, {from: trustor});
+    const currentBeneficiary = await trust.beneficiary();
+    assert.equal(beneficiary2, currentBeneficiary);
   });
 
   it('Try to revoke trust from different account', async() => {
