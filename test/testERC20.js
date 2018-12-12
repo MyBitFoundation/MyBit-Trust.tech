@@ -116,7 +116,6 @@ contract('Trust - Using ERC20 Token', async (accounts) => {
     let trustAddress = tx.logs[0].args._trustAddress;
     // console.log('Trust Address: ' + trustAddress);
 
-    let blockNumber = await web3.eth.getBlock('latest').number;
     //Instantiate deployed trust contract
     trust = await Trust.at(trustAddress);
 
@@ -144,8 +143,8 @@ contract('Trust - Using ERC20 Token', async (accounts) => {
     assert.equal(beneficiary, await trust.beneficiary());
     assert.equal(trustBalance, await trust.trustBalance());
     let expiration = await trust.expiration();
-    assert.equal(blockNumber + trustExpiration, expiration);
-    assert.equal(trustExpiration-3, await trust.blocksUntilExpiration());
+    let now = await web3.eth.getBlock('latest').timestamp;
+    assert.equal(now + trustExpiration, expiration);
   });
 
   it('Attemp to deposit in trust', async() => {
@@ -178,13 +177,9 @@ contract('Trust - Using ERC20 Token', async (accounts) => {
   });
 
   it('Change Expiration', async() => {
-      // console.log('blockNumber: ' + await web3.eth.getBlock('latest').number);
-      // console.log('expiration: ' + await trust.expiration());
     //Change expiration to 0
     await trust.changeExpiration(0, {from: trustor});
-    // console.log('blockNumber: ' + await web3.eth.getBlock('latest').number);
-    // console.log('expiration: ' + await trust.expiration());
-    assert.equal(0, await trust.blocksUntilExpiration());
+    assert.equal(0, await trust.secUntilExpiration());
   });
 
   it('Withdraw', async() => {
@@ -193,9 +188,16 @@ contract('Trust - Using ERC20 Token', async (accounts) => {
     let trustBalance = await trust.trustBalance();
     // console.log('Balance Before: ' + balanceERC20Before);
     // console.log('Trust Before: ' + trustBalance);
-
+    //Advance time
+    web3.currentProvider.send({
+      jsonrpc: "2.0",
+      method: "evm_increaseTime",
+      params: [6], id: 0
+    }, function(){
+      console.log('Move forward in time');
+    });
     //Widthdraw
-    assert.equal(await trust.blocksUntilExpiration(), 0);
+    assert.equal(await trust.secUntilExpiration(), 0);
     let tx = await trust.withdraw({from: beneficiary});
 
     let balanceETHAfter = await web3.eth.getBalance(beneficiary);
@@ -242,8 +244,6 @@ contract('Trust - Using ERC20 Token', async (accounts) => {
   it('Revoke Trust', async() => {
     let balanceBefore = await erc20.balanceOf(trustor);
     let trustBalance = await trust.trustBalance();
-    let beforeExpirationTrue = bn(await trust.expiration()).gt(await web3.eth.getBlock('latest').number);
-    assert.equal(beforeExpirationTrue, true);
 
     // Revoke trust
     tx = await trust.revoke({from: trustor});
@@ -251,8 +251,6 @@ contract('Trust - Using ERC20 Token', async (accounts) => {
 
     // Check variables
     let balanceAfter = await erc20.balanceOf(trustor);
-    // console.log("Balance Before", balanceBefore);
-    // console.log("Balance After", balanceAfter);
     assert.equal(bn(balanceBefore).plus(trustBalance).eq(balanceAfter), true);
   });
 

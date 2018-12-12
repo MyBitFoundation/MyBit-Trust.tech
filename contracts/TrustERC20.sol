@@ -35,7 +35,7 @@ contract TrustERC20 {
 		trustor = _trustor;
 		beneficiary = _beneficiary;
 		revocable = _revocable;
-		expiration = block.number.add(_expiration);
+		expiration = block.timestamp.add(_expiration);
 		token = ERC20(_tokenContractAddress);
 	}
 

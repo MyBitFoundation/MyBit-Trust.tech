@@ -27,14 +27,14 @@ contract TrustFactory {
   // @notice trustors can deploy new trust contracts here
   // @param (address) _beneficiary = The address who is to receive ETH from Trust
   // @param (bool) _revokeable = Whether or not trustor is able to revoke contract or change _beneficiary
-  // @param (uint) _blocksUntilExpiration = Number of Ethereum blocks until Trust expires
-  function deployTrust(address _beneficiary, bool _revokeable, uint _blocksUntilExpiration)
+  // @param (uint) _expiration = Number of seconds until Trust expires
+  function deployTrust(address _beneficiary, bool _revokeable, uint _expiration)
   external
   payable {
     require(msg.value > 0);
     require(!expired);
     require(mybBurner.burn(msg.sender, mybFee));
-    Trust newTrust = new Trust(msg.sender, _beneficiary, _revokeable, _blocksUntilExpiration);
+    Trust newTrust = new Trust(msg.sender, _beneficiary, _revokeable, _expiration);
     newTrust.depositTrust.value(msg.value)();
     emit LogNewTrust(msg.sender, _beneficiary, address(newTrust), msg.value);
   }
@@ -42,14 +42,14 @@ contract TrustFactory {
   // @notice TrustERC20 should be deployed in 2 steps to allow authorization to spend tokens
   // @param (address) _beneficiary = The address who is to receive ETH from Trust
   // @param (bool) _revokeable = Whether or not trustor is able to revoke contract or change _beneficiary
-  // @param (uint) _blocksUntilExpiration = Number of Ethereum blocks until Trust expires
+  // @param (uint) _expiration = Number of seconds until Trust expires
   // @param (address) _tokenContractAddress = The address of the contract of the token which should be used for the trust
-  function createTrustERC20(address _beneficiary, bool _revokeable, uint _blocksUntilExpiration, address _tokenContractAddress)
+  function createTrustERC20(address _beneficiary, bool _revokeable, uint _expiration, address _tokenContractAddress)
   external
   payable{
     require(!expired);
     require(mybBurner.burn(msg.sender, mybFee));
-    TrustERC20 newTrust = new TrustERC20(msg.sender, _beneficiary, _revokeable, _blocksUntilExpiration, _tokenContractAddress);
+    TrustERC20 newTrust = new TrustERC20(msg.sender, _beneficiary, _revokeable, _expiration, _tokenContractAddress);
     emit LogNewTrust(msg.sender, _beneficiary, address(newTrust), 0);
   }
 
