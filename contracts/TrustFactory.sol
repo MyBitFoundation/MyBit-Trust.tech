@@ -1,6 +1,7 @@
 pragma solidity ^0.4.24;
 
 import './Trust.sol';
+import './TrustERC20.sol';
 import './MyBitBurner.sol';
 
 
@@ -36,6 +37,20 @@ contract TrustFactory {
     Trust newTrust = new Trust(msg.sender, _beneficiary, _revokeable, _blocksUntilExpiration);
     newTrust.depositTrust.value(msg.value)();
     emit LogNewTrust(msg.sender, _beneficiary, address(newTrust), msg.value);
+  }
+
+  // @notice TrustERC20 should be deployed in 2 steps to allow authorization to spend tokens
+  // @param (address) _beneficiary = The address who is to receive ETH from Trust
+  // @param (bool) _revokeable = Whether or not trustor is able to revoke contract or change _beneficiary
+  // @param (uint) _blocksUntilExpiration = Number of Ethereum blocks until Trust expires
+  // @param (address) _tokenContractAddress = The address of the contract of the token which should be used for the trust
+  function createTrustERC20(address _beneficiary, bool _revokeable, uint _blocksUntilExpiration, address _tokenContractAddress)
+  external
+  payable{
+    require(!expired);
+    require(mybBurner.burn(msg.sender, mybFee));
+    TrustERC20 newTrust = new TrustERC20(msg.sender, _beneficiary, _revokeable, _blocksUntilExpiration, _tokenContractAddress);
+    emit LogNewTrust(msg.sender, _beneficiary, address(newTrust), 0);
   }
 
   // @notice If called by owner, this function prevents more Trust contracts from being made once
