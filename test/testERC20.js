@@ -307,7 +307,7 @@ contract('Trust - Using ERC20 Token', async (accounts) => {
 
   it('Fail to deploy ERC20 Trust - balance too low', async() => {
     const noBalance = web3.eth.accounts[web3.eth.accounts.length - 1];
-    let trustBalance = 2 * WEI;
+    let trustBalance = 2 * tokenPerAccount;
     await token.approve(burnerAddress, burnFee, {from: noBalance});
     let tx = await trustFactory.createTrustERC20(beneficiary, true, 1000, erc20Address, {from: noBalance});
     let trustAddress = tx.logs[0].args._trustAddress;
