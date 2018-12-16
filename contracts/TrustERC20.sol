@@ -4,8 +4,8 @@ import './SafeMath.sol';
 import "./token/ERC20.sol";
 
 // @title Trust contract
-// @author Kyle Dewhurst, MyBit Foundation
-// @notice This contract allows someone to leave ETH for a beneficiary once expiration is reached
+// @author Yossi Pik
+// @notice This contract allows someone to leave ERC20 tokens for a beneficiary once expiration is reached
 // @dev Can extend the beneficiary for multiple accounts by setting beneficiary to a multi-owned contract
 contract TrustERC20 {
 	using SafeMath for uint;
@@ -17,7 +17,7 @@ contract TrustERC20 {
 
 	uint public expiration;    // Number of seconds until trust expires
 
-	uint public trustBalance;    // Amount of WEI intended for beneficiary
+	uint public trustBalance;    // Amount of tokens intended for beneficiary
 
 	bool public alreadyDeposited;  // Has the trustor already put in the funds for the trust?
 
@@ -25,10 +25,10 @@ contract TrustERC20 {
 
 	// @notice Constructor: Deploy Trust contract
 	// @param (address) _mybitBurner = The contract address of the MyBitBurner
-	// @param (address) _trustor = The address that is depositing ETH for the _beneficiary
-	// @param (address) _beneficiary = The ETH address of who is to receive the trustBalance
+	// @param (address) _trustor = The address that is depositing tokens for the _beneficiary
+	// @param (address) _beneficiary = The address of who is to receive the trustBalance
 	// @param (bool) _revocable = Can the trustor revoke the contract at any point before the expiration?
-	// @param (uint) _expiration = Number of blocks until the trust is redeemable (in Ethereum blocks)
+	// @param (uint) _expiration = Number of seconds until the trust is redeemable
 	// @param (address) _tokenContractAddress = The address of the contract of the token which should be used for the trust
 	constructor(address _trustor, address _beneficiary, bool _revocable, uint _expiration, address _tokenContractAddress)
 	public {
@@ -39,7 +39,7 @@ contract TrustERC20 {
 		token = ERC20(_tokenContractAddress);
 	}
 
-	// @notice (payable) trustor can deposit WEI here once
+	// @notice (payable) trustor can deposit tokens here once
 	// @dev this function is called by the trustor
 	// @param (uint) _amount = The amount of tokens to deposit to the Trust
 	function depositTrust(uint _amount)
@@ -82,15 +82,15 @@ contract TrustERC20 {
 	}
 
 	// @notice this allows the expiration of the trust to be changed to _numBlocks from block.timestamp
-	// @param (uint) _numBlocks = Trust will expire in _numBlocks
-	function changeExpiration(uint _numBlocks) //Note: This should throw if change is a negative number
+	// @param (uint) _seconds = Trust will expire in _seconds seconds
+	function changeExpiration(uint _seconds) //Note: This should throw if change is a negative number
 	external
 	lessThan(block.timestamp, expiration)
 	onlySender(trustor)
 	isRevocable
 	returns (bool){
 		uint oldExpiration = expiration;
-		expiration = block.timestamp.add(_numBlocks);
+		expiration = block.timestamp.add(_seconds);
 		emit LogExpirationChanged(oldExpiration, expiration);
 		return true;
 	}
