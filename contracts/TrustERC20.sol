@@ -41,17 +41,18 @@ contract TrustERC20 {
 
 	// @notice (payable) trustor can deposit WEI here once
 	// @dev this function is called by the trustor
-	function depositTrust()
+	// @param (uint) _amount = The amount of tokens to deposit to the Trust
+	function depositTrust(uint _amount)
 	external
-	lessThan(0, msg.value)
+	lessThan(0, _amount)
 	lessThan(block.timestamp, expiration)
 	payable {
 		require(!alreadyDeposited);
-		require(token.balanceOf(msg.sender) >= msg.value);
+		require(token.balanceOf(msg.sender) >= _amount);
 		alreadyDeposited = true;
-		trustBalance = trustBalance.add(msg.value);
-		token.transferFrom(msg.sender, address(this), msg.value);
-		emit LogDeposit(msg.sender, msg.value);
+		trustBalance = trustBalance.add(_amount);
+		token.transferFrom(msg.sender, address(this), _amount);
+		emit LogDeposit(msg.sender, _amount);
 	}
 
 	// @notice trustor can revoke the contract if revocable == true

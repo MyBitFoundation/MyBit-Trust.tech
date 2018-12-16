@@ -120,7 +120,7 @@ contract('Trust - Using ERC20 Token', async (accounts) => {
 
     // trust = await Trust.at(trustAddress);
     await erc20.approve(trustAddress, trustBalance, {from: trustor});
-    await trust.depositTrust({from: trustor, value: trustBalance});
+    await trust.depositTrust(trustBalance, {from: trustor});
 
     //Confirm burnt tokens
     let userBalance = await token.balanceOf(trustor);
@@ -146,7 +146,7 @@ contract('Trust - Using ERC20 Token', async (accounts) => {
   it('Attemp to deposit in trust', async() => {
     let err;
     try{
-      await trust.depositTrust({value: WEI});
+      await trust.depositTrust(WEI);
     }catch(e){
       err = e;
       // console.log('Money already deposited in trust');
@@ -236,7 +236,7 @@ contract('Trust - Using ERC20 Token', async (accounts) => {
     try{
       trust = await Trust.at(trustAddress);
       await erc20.approve(trustAddress, tokenPerAccount, {from: trustor});
-      await trust.depositTrust({from: trustor, value: tokenPerAccount});
+      await trust.depositTrust(tokenPerAccount, {from: trustor});
     }catch(e) { err = e; }
     assert.notEqual(err, null);
   });
@@ -251,7 +251,7 @@ contract('Trust - Using ERC20 Token', async (accounts) => {
 
     trust = await Trust.at(trustAddress);
     await erc20.approve(trustAddress, trustBalance, {from: trustor});
-    await trust.depositTrust({from: trustor, value: trustBalance});
+    await trust.depositTrust(trustBalance, {from: trustor});
   });
 
   it('Fail to change beneficiary', async() => {
@@ -316,7 +316,7 @@ contract('Trust - Using ERC20 Token', async (accounts) => {
 
     let err;
     try {
-      await trust.depositTrust({from: noBalance, value: trustBalance});
+      await trust.depositTrust(trustBalance, {from: noBalance});
     }
     catch(e) { err = e; }
     assert.notEqual(err, null);
