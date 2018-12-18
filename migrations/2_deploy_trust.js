@@ -10,7 +10,7 @@ module.exports = function(deployer, network, accounts) {
   const WEI = 10**18;
   const tokenSupply = 100000000*WEI;      // 100 million
 
-  var myb, erc20, trust, trustFactory, burner
+  var myb, erc20, trust, trustFactory, burner;
 
   deployer.then(function(){
 
@@ -64,7 +64,7 @@ module.exports = function(deployer, network, accounts) {
       "ERC20Token" : erc20.address,
       "MyBitBurner" : burner.address,
       "TrustFactory" : trustFactory.address
-    }
+    };
 
     var contracts_json = JSON.stringify(addresses, null, 4);
     var accounts_json = JSON.stringify(accounts, null, 4);
@@ -77,14 +77,17 @@ module.exports = function(deployer, network, accounts) {
       console.log('Accounts Saved');
     });
 
-    instanceList = [erc20, burner, trustFactory];
+    var instanceList = [{name:"MyBitToken", instance:myb}, {name:"ERC20", instance:erc20}, {name:"MyBitBurner", instance:burner}, {name:"TrustFactory", instance:trustFactory}];
 
     for(var i=0; i<instanceList.length; i++){
-      var instanceName = instanceList[i].constructor._json.contractName;
-      var instance_json = JSON.stringify(instanceList[i].abi, null, 4);
-      fs.writeFile('networks/' + network + '/' + instanceName + '.json', instance_json, (err) => {
+      var instance_js =
+        "export const ADDRESS = '" + instanceList[i].instance.address + "'; \n" +
+        "export const ABI = " + JSON.stringify(instanceList[i].instance.abi, null, 4) + ";";
+      fs.writeFile('networks/' + network + '/' + instanceList[i].name + '.js', instance_js, (err) => {
         if (err) throw err;
       });
     }
+    console.log('JS Saved');
   });
 };
+
