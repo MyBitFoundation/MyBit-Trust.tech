@@ -327,4 +327,43 @@ contract('Trust - Using ERC721', async (accounts) => {
     // await erc721.approve(beneficiary, 3000, {from: trustor});
     // await erc721.safeTransferFrom(trustor, beneficiary, 3000, "0x4920686176652031303021", {from: trustor});
   });
+
+  it("SampleERC721 require tests", async() => {
+    let err;
+    erc721 = await ERC721.new();
+    erc721.mint(trustor, 1000);
+    erc721.mint(trustor, 2000);
+
+    try {await erc721.mint(trustor, 1000);}
+    catch(e) { err = e; }
+    assert.notEqual(err, null);
+    try {await erc721.mint(0, 10000);}
+    catch(e) { err = e; }
+    assert.notEqual(err, null);
+    try {await erc721.balanceOf(0);}
+    catch(e) { err = e; }
+    assert.notEqual(err, null);
+    try {await erc721.approve(trustor, 2000, {from: trustor});}
+    catch(e) { err = e; }
+    assert.notEqual(err, null);
+    try {await erc721.approve(beneficiary2, 2000, {from: beneficiary});}
+    catch(e) { err = e; }
+    assert.notEqual(err, null);
+    try {await erc721.getApproved(10000, {from: beneficiary});}
+    catch(e) { err = e; }
+    assert.notEqual(err, null);
+    try {await erc721.setApprovalForAll(trustor, {from: trustor});}
+    catch(e) { err = e; }
+    assert.notEqual(err, null);
+    try {await erc721.transferFrom(beneficiary2, beneficiary, 10000, {from: trustor});}
+    catch(e) { err = e; }
+    assert.notEqual(err, null);
+    try {await erc721.transferFrom(beneficiary2, 0, 2000, {from: trustor});}
+    catch(e) { err = e; }
+    assert.notEqual(err, null);
+    try {await erc721.mint(trustor, 3000, {from: trustor});}
+    catch(e) { err = e; }
+    assert.notEqual(err, null);
+
+  });
 });
