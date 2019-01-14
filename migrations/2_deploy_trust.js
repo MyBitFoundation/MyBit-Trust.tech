@@ -2,6 +2,7 @@ const fs = require('fs');
 const bn = require('bignumber.js');
 const SafeMath = artifacts.require("./SafeMath.sol");
 const Token = artifacts.require("./token/ERC20.sol");
+const NFT = artifacts.require("./token/SampleERC721.sol");
 const Trust = artifacts.require("./Trust.sol");
 const TrustFactory = artifacts.require("./TrustFactory.sol");
 const MyBitBurner = artifacts.require("./MyBitBurner.sol");
@@ -10,7 +11,7 @@ module.exports = function(deployer, network, accounts) {
   const WEI = 10**18;
   const tokenSupply = 100000000*WEI;      // 100 million
 
-  var myb, erc20, trust, trustFactory, burner;
+  var myb, erc20, trust, trustFactory, burner, nft;
 
   deployer.then(function(){
 
@@ -32,7 +33,6 @@ module.exports = function(deployer, network, accounts) {
     for(var i=1; i<accounts.length; i++){
       myb.transfer(accounts[i], 10000*WEI);
     }
-    myb.transfer("0xc227D2476688001D55957399B418b6fDa18254E7", 10000*WEI);
 
     return Token.new(tokenSupply, "TestERC20", 18, "ERC20");
 
@@ -42,7 +42,6 @@ module.exports = function(deployer, network, accounts) {
     for(var i=1; i<accounts.length; i++){
       erc20.transfer(accounts[i], 10000*WEI);
     }
-    erc20.transfer("0xc227D2476688001D55957399B418b6fDa18254E7", 10000*WEI);
 
     return MyBitBurner.new(myb.address);
 
@@ -57,11 +56,20 @@ module.exports = function(deployer, network, accounts) {
     return burner.authorizeBurner(trustFactory.address);
 
   }).then(function() {
-    web3.eth.sendTransaction({from:accounts[0], to:"0xc227D2476688001D55957399B418b6fDa18254E7", value:10*WEI});
+
+    return NFT.new();
+
+  }).then(function(instance) {
+
+    nft = instance;
+    return nft;
+
+  }).then(function() {
 
     var addresses = {
       "MyBitToken" : myb.address,
       "ERC20Token" : erc20.address,
+      "NonFungibleToken" : nft.address,
       "MyBitBurner" : burner.address,
       "TrustFactory" : trustFactory.address
     };
@@ -77,7 +85,7 @@ module.exports = function(deployer, network, accounts) {
       console.log('Accounts Saved');
     });
 
-    var instanceList = [{name:"MyBitToken", instance:myb}, {name:"ERC20", instance:erc20}, {name:"MyBitBurner", instance:burner}, {name:"TrustFactory", instance:trustFactory}];
+    var instanceList = [{name:"MyBitToken", instance:myb}, {name:"ERC20", instance:erc20}, {name:"NonFungibleToken", instance:nft}, {name:"MyBitBurner", instance:burner}, {name:"TrustFactory", instance:trustFactory}];
 
     for(var i=0; i<instanceList.length; i++){
       var instance_js =
