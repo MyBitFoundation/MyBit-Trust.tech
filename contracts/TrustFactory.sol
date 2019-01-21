@@ -51,7 +51,7 @@ contract TrustFactory {
     require(!expired);
     require(mybBurner.burn(msg.sender, mybFee));
     TrustERC20 newTrust = new TrustERC20(msg.sender, _beneficiary, _revokeable, _expiration, _tokenContractAddress);
-    emit LogNewTrust(msg.sender, _beneficiary, address(newTrust), 0);
+    emit LogNewTrustERC20(msg.sender, _beneficiary, address(newTrust));
   }
 
   // @notice TrustERC721 should be deployed in 2 steps to allow authorization to spend tokens
@@ -65,7 +65,7 @@ contract TrustFactory {
     require(!expired);
     require(mybBurner.burn(msg.sender, mybFee));
     TrustERC721 newTrust = new TrustERC721(msg.sender, _beneficiary, _revokeable, _expiration, _tokenContractAddress);
-    emit LogNewTrust(msg.sender, _beneficiary, address(newTrust), 0);
+    emit LogNewTrustERC721(msg.sender, _beneficiary, address(newTrust));
   }
 
   // @notice If called by owner, this function prevents more Trust contracts from being made once
@@ -105,5 +105,7 @@ contract TrustFactory {
   }
 
   event LogNewTrust(address indexed _trustor, address indexed _beneficiary, address _trustAddress, uint _amount);
+  event LogNewTrustERC20(address indexed _trustor, address indexed _beneficiary, address _trustAddress);
+  event LogNewTrustERC721(address indexed _trustor, address indexed _beneficiary, address _trustAddress);
   event LogMYBFeeChange(uint _oldFee, uint _newFee);
 }
