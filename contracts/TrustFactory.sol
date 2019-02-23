@@ -16,7 +16,7 @@ contract TrustFactory {
 
   MyBitBurner public mybBurner;         // The MyBitBurner contract instance
 
-  uint public mybFee = uint256(250 * 10**18);     // How much MYB to burn in order to create a Trust
+  uint public mybFee = uint256(250*10**18);     // How much MYB to burn in order to create a Trust
 
   // @notice constructor: sets msg.sender as the owner, who has authority to close the factory
   constructor(address _mybTokenBurner)
@@ -29,12 +29,12 @@ contract TrustFactory {
   // @param (address) _beneficiary = The address who is to receive ETH from Trust
   // @param (bool) _revokeable = Whether or not trustor is able to revoke contract or change _beneficiary
   // @param (uint) _expiration = Number of seconds until Trust expires
-  function deployTrust(address _beneficiary, bool _revokeable, uint _expiration)
+  function deployTrust(address _beneficiary, bool _revokeable, uint _expiration, address _burnToken)
   external
   payable {
     require(msg.value > 0);
     require(!expired);
-    require(mybBurner.burn(msg.sender, mybFee));
+    require(mybBurner.burn(msg.sender, mybFee, _burnToken));
     Trust newTrust = new Trust(msg.sender, _beneficiary, _revokeable, _expiration);
     newTrust.depositTrust.value(msg.value)();
     emit LogNewTrust(msg.sender, _beneficiary, address(newTrust), msg.value);
@@ -45,11 +45,11 @@ contract TrustFactory {
   // @param (bool) _revokeable = Whether or not trustor is able to revoke contract or change _beneficiary
   // @param (uint) _expiration = Number of seconds until Trust expires
   // @param (address) _tokenContractAddress = The address of the contract of the token which should be used for the trust
-  function createTrustERC20(address _beneficiary, bool _revokeable, uint _expiration, address _tokenContractAddress)
+  function createTrustERC20(address _beneficiary, bool _revokeable, uint _expiration, address _tokenContractAddress, address _burnToken)
   external
   payable{
     require(!expired);
-    require(mybBurner.burn(msg.sender, mybFee));
+    require(mybBurner.burn(msg.sender, mybFee, _burnToken));
     TrustERC20 newTrust = new TrustERC20(msg.sender, _beneficiary, _revokeable, _expiration, _tokenContractAddress);
     emit LogNewTrustERC20(msg.sender, _beneficiary, address(newTrust));
   }
@@ -59,11 +59,11 @@ contract TrustFactory {
   // @param (bool) _revokeable = Whether or not trustor is able to revoke contract or change _beneficiary
   // @param (uint) _expiration = Number of seconds until Trust expires
   // @param (address) _tokenContractAddress = The address of the contract of the token which should be used for the trust
-  function createTrustERC721(address _beneficiary, bool _revokeable, uint _expiration, address _tokenContractAddress)
+  function createTrustERC721(address _beneficiary, bool _revokeable, uint _expiration, address _tokenContractAddress, address _burnToken)
   external
   payable{
     require(!expired);
-    require(mybBurner.burn(msg.sender, mybFee));
+    require(mybBurner.burn(msg.sender, mybFee, _burnToken));
     TrustERC721 newTrust = new TrustERC721(msg.sender, _beneficiary, _revokeable, _expiration, _tokenContractAddress);
     emit LogNewTrustERC721(msg.sender, _beneficiary, address(newTrust));
   }

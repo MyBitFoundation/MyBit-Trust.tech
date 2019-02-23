@@ -1,25 +1,25 @@
 var bn = require('bignumber.js');
 
 /* Contracts  */
-const Token = artifacts.require("./token/ERC20.sol");
+const Token = artifacts.require("./token/SampleERC20.sol");
 const Trust = artifacts.require("./TrustERC20.sol");
 const TrustFactory = artifacts.require("./TrustFactory.sol");
 const MyBitBurner = artifacts.require("./MyBitBurner.sol");
 
-const WEI = 1000000000000000000;
+const WEI = '1000000000000000000';
 
 contract('Trust - Using ERC20 Token', async (accounts) => {
-  const owner = web3.eth.accounts[0];
-  const trustor = web3.eth.accounts[1];
-  const beneficiary = web3.eth.accounts[2];
-  const beneficiary2 = web3.eth.accounts[3];
-  const beneficiary3 = web3.eth.accounts[4];
+  const owner = accounts[0];
+  const trustor = accounts[1];
+  const beneficiary = accounts[2];
+  const beneficiary2 = accounts[3];
+  const beneficiary3 = accounts[4];
   const beneficiaries = [beneficiary, beneficiary2, beneficiary3];
 
-  const tokenSupply = 180000000000000000000000000;
-  const tokenPerAccount = 1000000000000000000000;
+  const tokenSupply = '180000000000000000000000000';
+  const tokenPerAccount = '1000000000000000000000';
 
-  let burnFee = 250000000000000000000;
+  let burnFee = '250000000000000000000';
   let numTrustsMade = 0;
 
   let originalBeneficiary; //Original beneficiary
@@ -36,6 +36,7 @@ contract('Trust - Using ERC20 Token', async (accounts) => {
   let tokenAddress;
   let erc20Address;
   let burnerAddress;
+  let kyberAddress = '0x0000000000000000000000000000000000000000' //Just passing an empty address since we're not testing kyber
 
   // Deploy token contract
   it ('Deploy MyBit Token contract', async() => {
@@ -49,14 +50,14 @@ contract('Trust - Using ERC20 Token', async (accounts) => {
 
   // Give every user tokenPerAccount amount of tokens
   it("Spread tokens to users", async () => {
-    for (var i = 1; i < web3.eth.accounts.length; i++) {
-      //console.log(web3.eth.accounts[i]);
-      await token.transfer(web3.eth.accounts[i], tokenPerAccount);
-      let userBalance = await token.balanceOf(web3.eth.accounts[i]);
-      assert.equal(userBalance, tokenPerAccount);
+    for (var i = 1; i < accounts.length; i++) {
+      //console.log(accounts[i]);
+      await token.transfer(accounts[i], tokenPerAccount);
+      let userBalance = await token.balanceOf(accounts[i]);
+      assert.equal(bn(userBalance).eq(tokenPerAccount), true);
     }
     // Check token ledger is correct
-    let totalTokensCirculating = (web3.eth.accounts.length - 1) * (tokenPerAccount);
+    let totalTokensCirculating = bn(accounts.length - 1).times(tokenPerAccount);
     let remainingTokens = bn(tokenSupply).minus(totalTokensCirculating);
     let ledgerTrue = bn(await token.balanceOf(owner)).eq(remainingTokens);
     assert.equal(ledgerTrue, true);
@@ -68,34 +69,34 @@ contract('Trust - Using ERC20 Token', async (accounts) => {
     erc20Address = await erc20.address;
     // console.log(erc20Address);
 
-    assert.equal(await erc20.totalSupply(), tokenSupply);
-    assert.equal(await erc20.balanceOf(owner), tokenSupply);
+    assert.equal(bn(await erc20.totalSupply()).eq(tokenSupply), true);
+    assert.equal(bn(await erc20.balanceOf(owner)).eq(tokenSupply), true);
   });
 
   // Give every user tokenPerAccount amount of tokens
   it("Spread ERC20 tokens to users", async () => {
-    for (var i = 1; i < web3.eth.accounts.length - 1; i++) {
-      await erc20.transfer(web3.eth.accounts[i], tokenPerAccount);
-      let userBalance = await erc20.balanceOf(web3.eth.accounts[i]);
-      assert.equal(userBalance, tokenPerAccount);
+    for (var i = 1; i < accounts.length - 1; i++) {
+      await erc20.transfer(accounts[i], tokenPerAccount);
+      let userBalance = await erc20.balanceOf(accounts[i]);
+      assert.equal(bn(userBalance).eq(tokenPerAccount), true);
     }
     // Check token ledger is correct
-    let totalTokensCirculating = (web3.eth.accounts.length - 2) * (tokenPerAccount);
+    let totalTokensCirculating = bn(accounts.length).minus(2).times(tokenPerAccount);
     let remainingTokens = bn(tokenSupply).minus(totalTokensCirculating);
     let ledgerTrue = bn(await erc20.balanceOf(owner)).eq(remainingTokens);
     assert.equal(ledgerTrue, true);
   });
 
   it ('Deploy MyBitBurner contract', async() => {
-    myBitBurner = await MyBitBurner.new(tokenAddress);
+    myBitBurner = await MyBitBurner.new(tokenAddress, kyberAddress);
     burnerAddress = await myBitBurner.address;
-    assert.equal(await myBitBurner.owner(), web3.eth.accounts[0]);
+    assert.equal(await myBitBurner.owner(), accounts[0]);
     // console.log(burnerAddress);
   });
 
   it ('Deploy TrustFactory contract', async() => {
     trustFactory = await TrustFactory.new(burnerAddress);
-    assert.equal(await trustFactory.mybFee(), burnFee);
+    assert.equal(bn(await trustFactory.mybFee()).eq(burnFee), true);
     let tfAddress = await trustFactory.address;
     // console.log(tfAddress);
     await myBitBurner.authorizeBurner(tfAddress);
@@ -104,13 +105,13 @@ contract('Trust - Using ERC20 Token', async (accounts) => {
   });
 
   it('Deploy ERC20 Trust contract', async() => {
-    let trustBalance = (2 * WEI);
+    let trustBalance = bn(2).times(WEI);
     let balanceStart = await erc20.balanceOf(trustor);
     // console.log('Balance at Start: ' + bn(balanceStart));
 
     await token.approve(burnerAddress, burnFee, {from: trustor});
     let trustExpiration = 10;
-    let tx = await trustFactory.createTrustERC20(beneficiary, true, trustExpiration, erc20Address, {from: trustor});
+    let tx = await trustFactory.createTrustERC20(beneficiary, true, trustExpiration, erc20Address, tokenAddress, {from: trustor});
     numTrustsMade += 1;
     let trustAddress = tx.logs[0].args._trustAddress;
     // console.log('Trust Address: ' + trustAddress);
@@ -119,8 +120,8 @@ contract('Trust - Using ERC20 Token', async (accounts) => {
     trust = await Trust.at(trustAddress);
 
     // trust = await Trust.at(trustAddress);
-    await erc20.approve(trustAddress, trustBalance, {from: trustor});
-    await trust.depositTrust(trustBalance, {from: trustor});
+    await erc20.approve(trustAddress, trustBalance.toString(), {from: trustor});
+    await trust.depositTrust(trustBalance.toString(), {from: trustor});
 
     //Confirm burnt tokens
     let userBalance = await token.balanceOf(trustor);
@@ -140,7 +141,7 @@ contract('Trust - Using ERC20 Token', async (accounts) => {
     //Check trust
     assert.equal(trustor, await trust.trustor());
     assert.equal(beneficiary, await trust.beneficiary());
-    assert.equal(trustBalance, await trust.trustBalance());
+    assert.equal(bn(await trust.trustBalance()).eq(trustBalance), true);
   });
 
   it('Attemp to deposit in trust', async() => {
@@ -175,7 +176,7 @@ contract('Trust - Using ERC20 Token', async (accounts) => {
   it('Change Expiration', async() => {
     //Change expiration to 0
     await trust.changeExpiration(0, {from: trustor});
-    assert.equal(0, await trust.secUntilExpiration());
+    assert.equal(bn(await trust.secUntilExpiration()).eq(0), true);
   });
 
   it("Expect withdraw to fail: Wrong Beneficiary", async() => {
@@ -200,7 +201,7 @@ contract('Trust - Using ERC20 Token', async (accounts) => {
       console.log('Move forward in time');
     });
     //Widthdraw
-    assert.equal(await trust.secUntilExpiration(), 0);
+    assert.equal(bn(await trust.secUntilExpiration()).eq(0), true);
     let tx = await trust.withdraw({from: beneficiary});
 
     let balanceETHAfter = await web3.eth.getBalance(beneficiary);
@@ -213,8 +214,8 @@ contract('Trust - Using ERC20 Token', async (accounts) => {
     assert.equal(expectedERC20Balance.eq(balanceERC20After), true);
     //Check that only gas was used
     assert.equal(bn(balanceETHBefore).minus(gasUsed).eq(balanceETHAfter), true);
-    trustBalance = await trust.trustBalance();
-    assert.equal(trustBalance, 0);
+    trustBalance = bn(await trust.trustBalance());
+    assert.equal(trustBalance.eq(0), true);
   });
 
   it("Expect withdraw to fail: Trust already withdrawn", async() => {
@@ -229,7 +230,7 @@ contract('Trust - Using ERC20 Token', async (accounts) => {
 
     await token.approve(burnerAddress, burnFee, {from: trustor});
     let trustExpiration = 1000;
-    let tx = await trustFactory.createTrustERC20(beneficiary, true, trustExpiration, erc20Address, {from: trustor});
+    let tx = await trustFactory.createTrustERC20(beneficiary, true, trustExpiration, erc20Address, tokenAddress, {from: trustor});
     let trustAddress = tx.logs[0].args._trustAddress;
 
     let err;
@@ -242,11 +243,11 @@ contract('Trust - Using ERC20 Token', async (accounts) => {
   });
 
   it('Deploy ERC20 Trust contract again', async() => {
-    let trustBalance = (2 * WEI);
+    let trustBalance = bn(2).times(WEI).toString();
 
     await token.approve(burnerAddress, burnFee, {from: trustor});
     let trustExpiration = 1000;
-    let tx = await trustFactory.createTrustERC20(beneficiary, true, trustExpiration, erc20Address, {from: trustor});
+    let tx = await trustFactory.createTrustERC20(beneficiary, true, trustExpiration, erc20Address, tokenAddress, {from: trustor});
     let trustAddress = tx.logs[0].args._trustAddress;
 
     trust = await Trust.at(trustAddress);
@@ -299,17 +300,17 @@ contract('Trust - Using ERC20 Token', async (accounts) => {
   it('Fail to deploy ERC20 Trust - burner not approved', async() => {
     let err;
     try {
-      await trustFactory.createTrustERC20(beneficiary, true, 1000, erc20Address, {from: trustor});
+      await trustFactory.createTrustERC20(beneficiary, true, '1000', erc20Address, tokenAddress, {from: trustor});
     }
     catch(e) { err = e; }
     assert.notEqual(err, null);
   });
 
   it('Fail to deploy ERC20 Trust - balance too low', async() => {
-    const noBalance = web3.eth.accounts[web3.eth.accounts.length - 1];
-    let trustBalance = 2 * tokenPerAccount;
+    const noBalance = accounts[accounts.length - 1];
+    let trustBalance = bn(2).times(tokenPerAccount).toString();
     await token.approve(burnerAddress, burnFee, {from: noBalance});
-    let tx = await trustFactory.createTrustERC20(beneficiary, true, 1000, erc20Address, {from: noBalance});
+    let tx = await trustFactory.createTrustERC20(beneficiary, true, '1000', erc20Address, tokenAddress, {from: noBalance});
     let trustAddress = tx.logs[0].args._trustAddress;
     trust = await Trust.at(trustAddress);
     await erc20.approve(trustAddress, trustBalance, {from: noBalance});
@@ -324,7 +325,7 @@ contract('Trust - Using ERC20 Token', async (accounts) => {
 
   it('Fail to revoke unrevocable trust', async() => {
     await token.approve(burnerAddress, burnFee, {from: trustor});
-    let tx = await trustFactory.createTrustERC20(beneficiary, false, 1000, erc20Address, {from: trustor});
+    let tx = await trustFactory.createTrustERC20(beneficiary, false, 1000, erc20Address, tokenAddress, {from: trustor});
     let trustAddress = tx.logs[0].args._trustAddress;
     trust = await Trust.at(trustAddress);
 
@@ -344,7 +345,7 @@ contract('Trust - Using ERC20 Token', async (accounts) => {
     let err;
     try {
       await token.approve(burnerAddress, burnFee, {from: trustor});
-      await trustFactory.createTrustERC20(beneficiary, true, 10, erc20Address, {from: trustor});
+      await trustFactory.createTrustERC20(beneficiary, true, 10, erc20Address, tokenAddress, {from: trustor});
     }
     catch(e) { err = e; }
     assert.notEqual(err, null);
