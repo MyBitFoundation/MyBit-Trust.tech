@@ -1082,7 +1082,7 @@ contract('Kyber', function(accounts) {
     let trustAmount = BigNumber(10).times(ETH);
     let balanceBefore = await web3.eth.getBalance(accounts[1]);
     let block = await web3.eth.getBlock('latest');
-    tx = await factory.deployTrust(accounts[2], true, '100', ethAddress, {from: accounts[1], value: trustAmount.toString(), gas: '0xfffffffffff'});
+    tx = await factory.deployTrust(accounts[2], true, '100', ethAddress, {from: accounts[1], value: trustAmount.toString()});
     /*
     console.log(tx.logs);
     let logs = await burner.getPastEvents('LogTrade', {filter: {}, fromBlock: block.number});
