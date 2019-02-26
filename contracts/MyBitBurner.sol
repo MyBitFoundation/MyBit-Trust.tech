@@ -94,7 +94,6 @@ contract MyBitBurner {
     return change;
   }
 
-
   // @notice owner can authorize a contract to burn MyBit here
   // @param the address of the mybit dapp contract
   function authorizeBurner(address _burningContract)
@@ -118,6 +117,9 @@ contract MyBitBurner {
     emit LogBurnerRemoved(msg.sender, _burningContract);
     return true;
   }
+
+  // @notice fallback function. Needs to be open to receive returned Ether from kyber.trade()
+  function() external payable {}
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   //                                            Modifiers

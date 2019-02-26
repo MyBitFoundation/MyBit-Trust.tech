@@ -3,6 +3,7 @@ node_modules
 build
 dist
 coverageEnv
+package-lock.json
 
 ### Node ###
 

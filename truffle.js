@@ -6,6 +6,13 @@ module.exports = {
       network_id: "*",
       gasPrice: 1
     },
+    coverage: {
+      host: "localhost",
+      port: 8555,
+      network_id: "*",
+      gas: 0xfffffffffff,
+      gasPrice: 0x01
+    }
   },
   solc: {
     optimizer: {

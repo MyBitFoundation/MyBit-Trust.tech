@@ -34,10 +34,17 @@ contract TrustFactory {
   payable {
     require(msg.value > 0);
     require(!expired);
-    require(mybBurner.burn(msg.sender, mybFee, _burnToken));
+    uint amount;
+    //If burn token is Ether, burn a portion of the trust Ether to pay fees, else burn the token indicated
+    if(_burnToken == address(0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE)){
+      amount = ethBurn(msg.value);
+    } else {
+      require(mybBurner.burn(msg.sender, mybFee, _burnToken));
+      amount = msg.value;
+    }
     Trust newTrust = new Trust(msg.sender, _beneficiary, _revokeable, _expiration);
-    newTrust.depositTrust.value(msg.value)();
-    emit LogNewTrust(msg.sender, _beneficiary, address(newTrust), msg.value);
+    newTrust.depositTrust.value(amount)();
+    emit LogNewTrust(msg.sender, _beneficiary, address(newTrust), amount);
   }
 
   // @notice TrustERC20 should be deployed in 2 steps to allow authorization to spend tokens
@@ -49,7 +56,7 @@ contract TrustFactory {
   external
   payable{
     require(!expired);
-    require(mybBurner.burn(msg.sender, mybFee, _burnToken));
+    require(mybBurner.burn.value(msg.value)(msg.sender, mybFee, _burnToken));
     TrustERC20 newTrust = new TrustERC20(msg.sender, _beneficiary, _revokeable, _expiration, _tokenContractAddress);
     emit LogNewTrustERC20(msg.sender, _beneficiary, address(newTrust));
   }
@@ -63,7 +70,7 @@ contract TrustFactory {
   external
   payable{
     require(!expired);
-    require(mybBurner.burn(msg.sender, mybFee, _burnToken));
+    require(mybBurner.burn.value(msg.value)(msg.sender, mybFee, _burnToken));
     TrustERC721 newTrust = new TrustERC721(msg.sender, _beneficiary, _revokeable, _expiration, _tokenContractAddress);
     emit LogNewTrustERC721(msg.sender, _beneficiary, address(newTrust));
   }
@@ -86,12 +93,19 @@ contract TrustFactory {
     emit LogMYBFeeChange(oldFee, mybFee);
   }
 
-  // @notice fallback function. Rejects all ether
-  function ()
-	external
-	payable {
-		revert();
-	}
+  // @notice burn fees from Ether payment given, return the change after convert+burn
+  function ethBurn(uint _amount)
+  private
+  returns (uint) {
+    uint balanceBefore = address(this).balance;
+    require(mybBurner.burn.value(_amount)(address(this), mybFee, address(0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE)));
+    uint change = _amount - (balanceBefore - address(this).balance);
+    require(change <= address(this).balance, "Uh-oh, not enough funds");
+    return change;
+  }
+
+  // @notice fallback function. Needs to be open to receive returned Ether from ethBurn()
+  function () external payable {}
 
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

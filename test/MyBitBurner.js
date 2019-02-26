@@ -39,16 +39,6 @@ contract('Burner', async(accounts) => {
     burner = await Burner.new(token.address, kyberAddress);
   });
 
-  it('Fail to send ether', async() => {
-    let err;
-    try{
-      await web3.eth.sendTransaction({from:user1, to: burner.address, value: '10000'})
-    } catch(e){
-      err = e;
-    }
-    assert.notEqual(err, undefined);
-  });
-
   it('Fail to burn tokens', async() => {
     let err;
     try{

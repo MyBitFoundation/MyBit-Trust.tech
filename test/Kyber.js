@@ -1059,11 +1059,50 @@ contract('Kyber', function(accounts) {
     await factory.changeMYBFee(BigNumber(10**12).toString());
   });
 
+  it("Should fail to burn tokenInstance 1", async() => {
+    let err;
+    try{
+      //Approval not given to transfer token to burner address
+      await factory.deployTrust(accounts[2], true, '100', tokenInstance[1].address, {from: accounts[1], value: ETH.toString()});
+    } catch (e) {
+      err = e;
+    }
+    assert.notEqual(err, undefined);
+  });
+
   it("Should burn tokenInstance 1", async() => {
     await tokenInstance[1].approve(burner.address, tokenPerAccount.toString(), {from: accounts[1]});
     let balanceBefore = await tokenInstance[1].balanceOf(accounts[1]);
     await factory.deployTrust(accounts[2], true, '100', tokenInstance[1].address, {from: accounts[1], value: ETH.toString()});
     let balanceAfter = await tokenInstance[1].balanceOf(accounts[1]);
     assert.equal(BigNumber(balanceAfter).lt(balanceBefore), true);
+  });
+
+  it("Should burn ETH", async() => {
+    let trustAmount = BigNumber(10).times(ETH);
+    let balanceBefore = await web3.eth.getBalance(accounts[1]);
+    let block = await web3.eth.getBlock('latest');
+    tx = await factory.deployTrust(accounts[2], true, '100', ethAddress, {from: accounts[1], value: trustAmount.toString(), gas: '0xfffffffffff'});
+    /*
+    console.log(tx.logs);
+    let logs = await burner.getPastEvents('LogTrade', {filter: {}, fromBlock: block.number});
+    for(var i=0; i<logs.length; i++){
+      if(logs[i].args.src == ethChecksum){
+        console.log('Amount: ', BigNumber(logs[i].args.amount).toString());
+        console.log('Max: ', BigNumber(logs[i].args.max).toString());
+        console.log('Min Rate: ', BigNumber(logs[i].args.minRate).toString());
+      }
+    }
+    */
+    let actualTrustAmount;
+    for(var i=0; i<tx.logs.length; i++){
+      if(tx.logs[i].event == 'LogNewTrust'){
+        actualTrustAmount = tx.logs[i].args._amount
+      }
+    }
+
+    let balanceAfter = await web3.eth.getBalance(accounts[1]);
+    assert.equal(BigNumber(balanceAfter).lt(balanceBefore), true);
+    assert.equal(BigNumber(actualTrustAmount).lt(trustAmount), true);
   });
 });
