@@ -1,13 +1,13 @@
 pragma solidity ^0.4.0;
 
-import "./IERC721.sol";
+import "./ERC721.sol";
 import "../SafeMath.sol";
 
 /**
  * @title Sample NFT
  * @dev ERC721 dummy token for tests
  */
-contract SampleERC721 is IERC721{
+contract SampleERC721 is ERC721{
 
     using SafeMath for uint256;
 

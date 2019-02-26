@@ -1,7 +1,7 @@
 var bn = require('bignumber.js');
 
 /* Contracts  */
-const Token = artifacts.require("./token/ERC20.sol");
+const Token = artifacts.require("./token/SampleERC20.sol");
 const ERC721 = artifacts.require("./token/SampleERC721.sol");
 const Trust = artifacts.require("./TrustERC721.sol");
 const TrustFactory = artifacts.require("./TrustFactory.sol");
@@ -10,15 +10,15 @@ const MyBitBurner = artifacts.require("./MyBitBurner.sol");
 const WEI = 1000000000000000000;
 
 contract('Trust - Using ERC721', async (accounts) => {
-  const owner = web3.eth.accounts[0];
-  const trustor = web3.eth.accounts[1];
-  const beneficiary = web3.eth.accounts[2];
-  const beneficiary2 = web3.eth.accounts[3];
+  const owner = accounts[0];
+  const trustor = accounts[1];
+  const beneficiary = accounts[2];
+  const beneficiary2 = accounts[3];
 
-  const tokenSupply = 180000000000000000000000000;
-  const tokenPerAccount = 1000000000000000000000;
+  const tokenSupply = '180000000000000000000000000';
+  const tokenPerAccount = '1000000000000000000000';
 
-  let burnFee = 250000000000000000000;
+  let burnFee = '250000000000000000000';
 
   // Contract instances
   let token; // Token contract instance
@@ -32,6 +32,7 @@ contract('Trust - Using ERC721', async (accounts) => {
   let tokenAddress;
   let erc721Address;
   let burnerAddress;
+  let kyberAddress = '0x0000000000000000000000000000000000000000' //Just passing an empty address since we're not testing kyber
 
   // Deploy token contract
   it ('Deploy MyBit Token contract', async() => {
@@ -45,14 +46,14 @@ contract('Trust - Using ERC721', async (accounts) => {
 
   // Give every user tokenPerAccount amount of tokens
   it("Spread tokens to users", async () => {
-    for (var i = 1; i < web3.eth.accounts.length; i++) {
-      //console.log(web3.eth.accounts[i]);
-      await token.transfer(web3.eth.accounts[i], tokenPerAccount);
-      let userBalance = await token.balanceOf(web3.eth.accounts[i]);
+    for (var i = 1; i < accounts.length; i++) {
+      //console.log(accounts[i]);
+      await token.transfer(accounts[i], tokenPerAccount);
+      let userBalance = await token.balanceOf(accounts[i]);
       assert.equal(userBalance, tokenPerAccount);
     }
     // Check token ledger is correct
-    let totalTokensCirculating = (web3.eth.accounts.length - 1) * (tokenPerAccount);
+    let totalTokensCirculating = bn(accounts.length).minus(1).times(tokenPerAccount);
     let remainingTokens = bn(tokenSupply).minus(totalTokensCirculating);
     let ledgerTrue = bn(await token.balanceOf(owner)).eq(remainingTokens);
     assert.equal(ledgerTrue, true);
@@ -79,9 +80,9 @@ contract('Trust - Using ERC721', async (accounts) => {
   });
 
   it ('Deploy MyBitBurner contract', async() => {
-    myBitBurner = await MyBitBurner.new(tokenAddress);
+    myBitBurner = await MyBitBurner.new(tokenAddress, kyberAddress);
     burnerAddress = await myBitBurner.address;
-    assert.equal(await myBitBurner.owner(), web3.eth.accounts[0]);
+    assert.equal(await myBitBurner.owner(), accounts[0]);
     // console.log(burnerAddress);
   });
 
@@ -103,7 +104,7 @@ contract('Trust - Using ERC721', async (accounts) => {
 
     await token.approve(burnerAddress, burnFee, {from: trustor});
     let trustExpiration = 1000;
-    let tx = await trustFactory.createTrustERC721(beneficiary, true, trustExpiration, erc721Address, {from: trustor});
+    let tx = await trustFactory.createTrustERC721(beneficiary, true, trustExpiration, erc721Address, tokenAddress, {from: trustor});
     let trustAddress = tx.logs[0].args._trustAddress;
     // console.log('Trust Address: ' + trustAddress);
 
@@ -204,7 +205,7 @@ contract('Trust - Using ERC721', async (accounts) => {
 
     await token.approve(burnerAddress, burnFee, {from: trustor});
     let trustExpiration = 1000;
-    let tx = await trustFactory.createTrustERC721(beneficiary, true, trustExpiration, erc721Address, {from: trustor});
+    let tx = await trustFactory.createTrustERC721(beneficiary, true, trustExpiration, erc721Address, tokenAddress, {from: trustor});
     let trustAddress = tx.logs[0].args._trustAddress;
 
     trust = await Trust.at(trustAddress);
@@ -257,7 +258,7 @@ contract('Trust - Using ERC721', async (accounts) => {
   it('Fail to deploy ERC721 Trust - burner not approved', async() => {
     let err;
     try {
-      await trustFactory.createTrustERC721(beneficiary, true, 1000, erc721Address, {from: trustor});
+      await trustFactory.createTrustERC721(beneficiary, true, 1000, erc721Address, tokenAddress, {from: trustor});
     }
     catch(e) { err = e; }
     assert.notEqual(err, null);
@@ -265,7 +266,7 @@ contract('Trust - Using ERC721', async (accounts) => {
 
   it('Fail to deploy ERC721 Trust - not owner', async() => {
     await token.approve(burnerAddress, burnFee, {from: trustor});
-    let tx = await trustFactory.createTrustERC721(beneficiary, true, 1000, erc721Address, {from: trustor});
+    let tx = await trustFactory.createTrustERC721(beneficiary, true, 1000, erc721Address, tokenAddress, {from: trustor});
     let trustAddress = tx.logs[0].args._trustAddress;
     trust = await Trust.at(trustAddress);
 
@@ -279,7 +280,7 @@ contract('Trust - Using ERC721', async (accounts) => {
 
   it('Fail to revoke unrevocable trust', async() => {
     await token.approve(burnerAddress, burnFee, {from: trustor});
-    let tx = await trustFactory.createTrustERC721(beneficiary, false, 1000, erc721Address, {from: trustor});
+    let tx = await trustFactory.createTrustERC721(beneficiary, false, 1000, erc721Address, tokenAddress, {from: trustor});
     let trustAddress = tx.logs[0].args._trustAddress;
     trust = await Trust.at(trustAddress);
 
@@ -299,7 +300,7 @@ contract('Trust - Using ERC721', async (accounts) => {
     let err;
     try {
       await token.approve(burnerAddress, burnFee, {from: trustor});
-      await trustFactory.createTrustERC721(beneficiary, true, 10, erc721Address, {from: trustor});
+      await trustFactory.createTrustERC721(beneficiary, true, 10, erc721Address, tokenAddress, {from: trustor});
     }
     catch(e) { err = e; }
     assert.notEqual(err, null);

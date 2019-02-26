@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 
 import './SafeMath.sol';
-import './token/IERC721.sol';
+import './token/ERC721.sol';
 
 // @title Trust contract
 // @author Yossi Pik
@@ -17,7 +17,7 @@ contract TrustERC721 {
 
 	uint public expiration;    // Number of seconds until trust expires
 
-	IERC721 public token;		// The token to be used for the trust
+	ERC721 public token;		// The token to be used for the trust
 
 	uint public trustTokenId;    // token id intended for beneficiary
 
@@ -38,7 +38,7 @@ contract TrustERC721 {
 		beneficiary = _beneficiary;
 		revocable = _revocable;
 		expiration = block.timestamp.add(_expiration);
-		token = IERC721(_tokenContractAddress);
+		token = ERC721(_tokenContractAddress);
 	}
 
 	// @notice (payable) trustor can deposit tokens here once

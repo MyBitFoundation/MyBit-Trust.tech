@@ -23,9 +23,9 @@
     "ganache-cli": "^6.1.8",
     "request": "^2.87.0",
     "solc": "0.4.24",
-    "truffle": "4.1.14"
+    "truffle": "5.0.0-beta.2"
   },
   "devDependencies": {
-    "solidity-coverage": "^0.5.11"
+    "solidity-coverage": "0.5.11"
   }
 }
